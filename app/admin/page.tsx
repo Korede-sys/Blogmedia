@@ -14,6 +14,7 @@ import {
   Plus,
 } from 'lucide-react';
 import { formatDate, formatRelativeTime } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 
 interface DashboardStats {
   published: number;
@@ -65,7 +66,6 @@ export default function AdminOverview() {
           totalViews,
         });
 
-        // Recent articles
         let recentQuery = supabase
           .from('articles')
           .select('id, title, status, updated_at, author:profiles(full_name)')
@@ -88,22 +88,22 @@ export default function AdminOverview() {
   }, [profile, hasRole]);
 
   const statCards = [
-    { label: 'Published', value: stats?.published ?? '—', icon: CheckCircle2, color: 'text-green-600' },
-    { label: 'Drafts', value: stats?.drafts ?? '—', icon: FileText, color: 'text-blue-600' },
-    { label: 'In Review', value: stats?.inReview ?? '—', icon: Clock, color: 'text-amber-600' },
-    { label: 'Scheduled', value: stats?.scheduled ?? '—', icon: Clock, color: 'text-purple-600' },
-    { label: 'Pending Comments', value: stats?.pendingComments ?? '—', icon: MessageSquare, color: 'text-orange-600' },
-    { label: 'Total Views', value: stats?.totalViews?.toLocaleString() ?? '—', icon: TrendingUp, color: 'text-gold' },
+    { label: 'Published', value: stats?.published ?? '—', icon: CheckCircle2, color: 'text-success', bg: 'bg-success/10' },
+    { label: 'Drafts', value: stats?.drafts ?? '—', icon: FileText, color: 'text-info', bg: 'bg-info/10' },
+    { label: 'In Review', value: stats?.inReview ?? '—', icon: Clock, color: 'text-warning', bg: 'bg-warning/10' },
+    { label: 'Scheduled', value: stats?.scheduled ?? '—', icon: Clock, color: 'text-accent', bg: 'bg-accent/10' },
+    { label: 'Pending Comments', value: stats?.pendingComments ?? '—', icon: MessageSquare, color: 'text-warning', bg: 'bg-warning/10' },
+    { label: 'Total Views', value: stats?.totalViews?.toLocaleString() ?? '—', icon: TrendingUp, color: 'text-gold', bg: 'bg-gold/10' },
   ];
 
   const statusColors: Record<string, string> = {
-    draft: 'bg-blue-100 text-blue-700',
-    in_review: 'bg-amber-100 text-amber-700',
-    changes_requested: 'bg-orange-100 text-orange-700',
-    approved: 'bg-green-100 text-green-700',
-    scheduled: 'bg-purple-100 text-purple-700',
-    published: 'bg-emerald-100 text-emerald-700',
-    archived: 'bg-gray-100 text-gray-700',
+    draft: 'bg-info/15 text-info',
+    in_review: 'bg-warning/15 text-warning',
+    changes_requested: 'bg-destructive/15 text-destructive',
+    approved: 'bg-success/15 text-success',
+    scheduled: 'bg-accent/15 text-accent',
+    published: 'bg-success/15 text-success',
+    archived: 'bg-muted text-muted-foreground',
   };
 
   return (
@@ -117,7 +117,7 @@ export default function AdminOverview() {
         </div>
         <Link
           href="/admin/articles/new"
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-foreground text-background text-sm font-sans font-semibold rounded-sm hover:bg-foreground/90 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-foreground text-background text-sm font-sans font-semibold rounded-md hover:bg-foreground/90 transition-colors"
         >
           <Plus className="w-4 h-4" />
           New Article
@@ -131,9 +131,11 @@ export default function AdminOverview() {
           return (
             <div
               key={card.label}
-              className="bg-card border border-border rounded-sm p-5"
+              className="bg-card border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200"
             >
-              <Icon className={`w-5 h-5 mb-3 ${card.color}`} />
+              <div className={cn('w-9 h-9 rounded-lg flex items-center justify-center mb-3', card.bg)}>
+                <Icon className={cn('w-[18px] h-[18px]', card.color)} />
+              </div>
               <p className="text-2xl font-serif font-bold">
                 {loading ? '…' : card.value}
               </p>
@@ -146,14 +148,14 @@ export default function AdminOverview() {
       </div>
 
       {/* Recent activity */}
-      <div className="bg-card border border-border rounded-sm">
+      <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-          <h2 className="font-sans font-semibold">Recent Articles</h2>
+          <h2 className="font-sans font-semibold text-base">Recent Articles</h2>
           <Link
             href="/admin/articles"
-            className="text-sm text-gold hover:text-gold/80 font-sans flex items-center gap-1"
+            className="text-sm text-gold hover:text-gold/80 font-sans flex items-center gap-1 font-medium"
           >
-            View all <ArrowRight className="w-3 h-3" />
+            View all <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
         <div className="divide-y divide-border">
@@ -166,7 +168,7 @@ export default function AdminOverview() {
               <Link
                 key={article.id}
                 href={`/admin/articles/${article.id}`}
-                className="flex items-center justify-between px-6 py-4 hover:bg-muted/30 transition-colors"
+                className="flex items-center justify-between px-6 py-4 hover:bg-secondary/40 transition-colors"
               >
                 <div className="min-w-0 flex-1">
                   <p className="font-sans text-sm font-medium truncate">
@@ -178,9 +180,10 @@ export default function AdminOverview() {
                   </p>
                 </div>
                 <span
-                  className={`px-2.5 py-1 text-xs font-sans rounded-sm capitalize flex-shrink-0 ml-4 ${
-                    statusColors[article.status] || 'bg-gray-100 text-gray-700'
-                  }`}
+                  className={cn(
+                    'px-2.5 py-1 text-xs font-sans rounded-md capitalize flex-shrink-0 ml-4 font-medium',
+                    statusColors[article.status] || 'bg-muted text-muted-foreground'
+                  )}
                 >
                   {article.status.replace('_', ' ')}
                 </span>

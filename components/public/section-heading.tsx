@@ -18,17 +18,17 @@ export function SectionHeading({
   className,
 }: SectionHeadingProps) {
   return (
-    <div className={cn('mb-8', className)}>
+    <div className={cn('mb-10', className)}>
       <div className="flex items-end justify-between gap-4">
         <div>
-          <div className="flex items-center gap-3 mb-2">
-            <span className="h-px w-6 bg-gold" />
+          <div className="flex items-center gap-3 mb-2.5">
+            <span className="h-px w-8 bg-gold" />
             <h2 className="font-serif text-2xl md:text-3xl font-bold text-foreground">
               {title}
             </h2>
           </div>
           {subtitle && (
-            <p className="text-sm text-muted-foreground font-sans ml-9">
+            <p className="text-sm text-muted-foreground font-sans ml-[44px]">
               {subtitle}
             </p>
           )}
@@ -36,10 +36,10 @@ export function SectionHeading({
         {href && (
           <Link
             href={href}
-            className="group flex items-center gap-1.5 text-sm font-sans font-medium text-gold hover:text-gold/80 transition-colors whitespace-nowrap"
+            className="group flex items-center gap-1.5 text-sm font-sans font-medium text-gold hover:text-gold/80 transition-colors whitespace-nowrap flex-shrink-0"
           >
             {hrefLabel}
-            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
           </Link>
         )}
       </div>

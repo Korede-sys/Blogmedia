@@ -4,72 +4,124 @@
 
 @layer base {
   :root {
-    /* Warm ivory and off-white backgrounds */
-    --background: 42 33% 97%;
-    --foreground: 20 14% 10%;
+    /* Warm ivory and off-white backgrounds — premium magazine feel */
+    --background: 40 26% 96%;
+    --background-subtle: 38 22% 94%;
+    --foreground: 24 15% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 20 14% 10%;
+    --card-foreground: 24 15% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 20 14% 10%;
+    --popover-foreground: 24 15% 12%;
 
-    /* Near-black primary */
-    --primary: 20 14% 10%;
-    --primary-foreground: 42 33% 97%;
+    /* Deep ink primary */
+    --primary: 24 15% 12%;
+    --primary-foreground: 40 26% 96%;
 
     /* Muted warm gray */
-    --secondary: 40 20% 92%;
-    --secondary-foreground: 20 14% 10%;
+    --secondary: 38 18% 90%;
+    --secondary-foreground: 24 15% 12%;
 
-    --muted: 40 16% 90%;
-    --muted-foreground: 25 10% 40%;
+    --muted: 36 14% 88%;
+    --muted-foreground: 28 10% 42%;
 
-    /* Gold accent */
-    --accent: 42 74% 49%;
-    --accent-foreground: 20 14% 10%;
+    /* Refined gold accent — slightly warmer, more sophisticated */
+    --accent: 38 68% 47%;
+    --accent-foreground: 24 15% 12%;
 
-    --gold: 42 74% 49%;
-    --gold-foreground: 20 14% 10%;
+    --gold: 38 68% 47%;
+    --gold-light: 40 72% 55%;
+    --gold-dark: 36 64% 39%;
+    --gold-foreground: 24 15% 12%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 65% 48%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 40 15% 86%;
-    --input: 40 15% 86%;
-    --ring: 42 74% 49%;
+    --success: 152 48% 38%;
+    --success-foreground: 0 0% 98%;
 
-    --chart-1: 42 74% 49%;
-    --chart-2: 200 70% 45%;
-    --chart-3: 150 55% 40%;
-    --chart-4: 10 75% 55%;
-    --chart-5: 280 60% 55%;
+    --warning: 35 85% 52%;
+    --warning-foreground: 24 15% 12%;
 
-    --radius: 0.25rem;
+    --info: 205 70% 45%;
+    --info-foreground: 0 0% 98%;
+
+    --border: 36 16% 84%;
+    --input: 36 16% 84%;
+    --ring: 38 68% 47%;
+
+    --chart-1: 38 68% 47%;
+    --chart-2: 205 70% 45%;
+    --chart-3: 152 48% 38%;
+    --chart-4: 10 72% 52%;
+    --chart-5: 280 52% 52%;
+
+    --radius: 0.375rem;
+
+    /* Premium shadow tokens */
+    --shadow-sm: 0 1px 2px 0 hsl(24 15% 12% / 0.05);
+    --shadow-md: 0 4px 12px -2px hsl(24 15% 12% / 0.08), 0 2px 6px -1px hsl(24 15% 12% / 0.04);
+    --shadow-lg: 0 12px 32px -4px hsl(24 15% 12% / 0.12), 0 4px 12px -2px hsl(24 15% 12% / 0.06);
+    --shadow-gold: 0 8px 24px -4px hsl(38 68% 47% / 0.25);
   }
 
   .dark {
-    --background: 20 14% 8%;
-    --foreground: 42 33% 95%;
-    --card: 20 14% 12%;
-    --card-foreground: 42 33% 95%;
-    --popover: 20 14% 12%;
-    --popover-foreground: 42 33% 95%;
-    --primary: 42 33% 95%;
-    --primary-foreground: 20 14% 8%;
-    --secondary: 20 10% 18%;
-    --secondary-foreground: 42 33% 95%;
-    --muted: 20 10% 18%;
-    --muted-foreground: 40 10% 60%;
-    --accent: 42 74% 49%;
-    --accent-foreground: 20 14% 8%;
-    --gold: 42 74% 49%;
-    --gold-foreground: 20 14% 8%;
-    --destructive: 0 62% 45%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 20 10% 22%;
-    --input: 20 10% 22%;
-    --ring: 42 74% 49%;
+    /* Deep warm charcoal — not pure black, has warmth */
+    --background: 24 12% 7%;
+    --background-subtle: 24 11% 9%;
+    --foreground: 40 20% 93%;
+
+    --card: 24 12% 10%;
+    --card-foreground: 40 20% 93%;
+
+    --popover: 24 12% 10%;
+    --popover-foreground: 40 20% 93%;
+
+    --primary: 40 20% 93%;
+    --primary-foreground: 24 12% 7%;
+
+    --secondary: 24 10% 16%;
+    --secondary-foreground: 40 20% 93%;
+
+    --muted: 24 10% 14%;
+    --muted-foreground: 38 10% 62%;
+
+    /* Gold stays warm and bright in dark mode */
+    --accent: 42 75% 55%;
+    --accent-foreground: 24 12% 7%;
+
+    --gold: 42 75% 55%;
+    --gold-light: 44 80% 62%;
+    --gold-dark: 38 68% 45%;
+    --gold-foreground: 24 12% 7%;
+
+    --destructive: 0 60% 50%;
+    --destructive-foreground: 40 20% 93%;
+
+    --success: 152 45% 48%;
+    --success-foreground: 24 12% 7%;
+
+    --warning: 35 85% 55%;
+    --warning-foreground: 24 12% 7%;
+
+    --info: 205 65% 55%;
+    --info-foreground: 24 12% 7%;
+
+    --border: 24 10% 18%;
+    --input: 24 10% 18%;
+    --ring: 42 75% 55%;
+
+    --chart-1: 42 75% 55%;
+    --chart-2: 205 65% 55%;
+    --chart-3: 152 45% 48%;
+    --chart-4: 10 70% 57%;
+    --chart-5: 280 50% 60%;
+
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.2);
+    --shadow-md: 0 4px 12px -2px hsl(0 0% 0% / 0.3), 0 2px 6px -1px hsl(0 0% 0% / 0.2);
+    --shadow-lg: 0 12px 32px -4px hsl(0 0% 0% / 0.4), 0 4px 12px -2px hsl(0 0% 0% / 0.25);
+    --shadow-gold: 0 8px 24px -4px hsl(42 75% 55% / 0.3);
   }
 }
 
@@ -77,30 +129,41 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground antialiased;
-    font-feature-settings: "ss01", "cv01", "cv03";
+    font-feature-settings: "ss01", "cv01", "cv03", "cv05";
+    text-rendering: optimizeLegibility;
   }
 
   /* Editorial typography defaults */
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif;
-    line-height: 1.2;
+    line-height: 1.15;
     letter-spacing: -0.02em;
+  }
+
+  /* Selection */
+  ::selection {
+    background: hsl(var(--gold) / 0.2);
+    color: hsl(var(--foreground));
   }
 
   /* Article body typography */
   .article-body {
-    @apply text-[1.125rem] leading-[1.75] text-foreground/90;
+    @apply text-[1.15rem] leading-[1.8] text-foreground/90;
+  }
+  .article-body > *:first-child {
+    @apply mt-0;
   }
   .article-body p {
     @apply mb-6;
   }
   .article-body h2 {
-    @apply text-2xl font-serif font-bold mt-12 mb-4;
+    @apply text-2xl font-serif font-bold mt-14 mb-4 scroll-mt-24;
   }
   .article-body h3 {
-    @apply text-xl font-serif font-bold mt-8 mb-3;
+    @apply text-xl font-serif font-bold mt-10 mb-3 scroll-mt-24;
   }
   .article-body ul {
     @apply list-disc pl-6 mb-6 space-y-2;
@@ -109,22 +172,25 @@
     @apply list-decimal pl-6 mb-6 space-y-2;
   }
   .article-body blockquote {
-    @apply border-l-4 border-gold pl-6 my-8 italic text-lg font-serif text-foreground/80;
+    @apply border-l-[3px] border-gold pl-7 my-10 italic text-xl font-serif text-foreground/80 leading-relaxed;
   }
   .article-body a {
-    @apply text-gold underline underline-offset-2 hover:text-gold/80 transition-colors;
+    @apply text-gold underline underline-offset-[3px] decoration-gold/30 hover:decoration-gold transition-colors;
   }
   .article-body img {
-    @apply rounded-sm my-8 w-full;
+    @apply rounded-md my-10 w-full shadow-md;
   }
   .article-body figure {
-    @apply my-8;
+    @apply my-10;
   }
   .article-body figcaption {
-    @apply text-sm text-muted-foreground mt-2 text-center italic;
+    @apply text-sm text-muted-foreground mt-3 text-center italic;
   }
   .article-body strong {
     @apply font-bold text-foreground;
+  }
+  .article-body hr {
+    @apply my-12 border-border;
   }
 }
 
@@ -133,7 +199,7 @@
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
   .container-article {
-    @apply max-w-3xl mx-auto px-4 sm:px-6;
+    @apply max-w-2xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 
   /* Gold underline animation for links */
@@ -142,7 +208,7 @@
   }
   .link-gold::after {
     content: '';
-    @apply absolute left-0 bottom-0 w-0 h-0.5 bg-gold transition-all duration-300;
+    @apply absolute left-0 bottom-0 w-0 h-0.5 bg-gold transition-all duration-300 ease-out;
   }
   .link-gold:hover::after {
     @apply w-full;
@@ -150,27 +216,79 @@
 
   /* Category label */
   .category-label {
-    @apply text-xs font-sans font-semibold uppercase tracking-[0.15em] text-gold;
+    @apply text-[0.6875rem] font-sans font-bold uppercase tracking-[0.18em] text-gold;
+  }
+
+  /* Premium card */
+  .card-premium {
+    @apply bg-card border border-border rounded-lg transition-all duration-300;
+    box-shadow: var(--shadow-sm);
+  }
+  .card-premium:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  /* Button styles */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 bg-foreground text-background text-sm font-sans font-semibold rounded-md hover:bg-foreground/90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 bg-gold text-gold-foreground text-sm font-sans font-semibold rounded-md hover:bg-gold/90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+    box-shadow: var(--shadow-sm);
+  }
+  .btn-gold:hover {
+    box-shadow: var(--shadow-gold);
+  }
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 border border-border bg-transparent text-foreground text-sm font-sans font-semibold rounded-md hover:bg-secondary transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Input style */
+  .input-premium {
+    @apply w-full px-4 py-3 bg-background border border-border rounded-md text-sm font-sans text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold/50 transition-all duration-200;
   }
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: hsl(var(--muted));
+  background: hsl(var(--background));
 }
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.3);
-  border-radius: 4px;
+  background: hsl(var(--muted-foreground) / 0.25);
+  border-radius: 5px;
+  border: 2px solid hsl(var(--background));
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.5);
+  background: hsl(var(--muted-foreground) / 0.4);
 }
 
 /* Reading progress bar */
 .reading-progress {
-  @apply fixed top-0 left-0 h-0.5 bg-gold z-50 transition-all duration-75;
+  @apply fixed top-0 left-0 h-[3px] bg-gold z-50 transition-all duration-75;
+  box-shadow: 0 0 8px hsl(var(--gold) / 0.5);
+}
+
+/* Subtle entrance animation */
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
 }

@@ -66,9 +66,9 @@ export default async function HomePage() {
       <SiteHeader />
 
       {/* Hero / Featured story */}
-      <section className="container-editorial pt-8 md:pt-12">
-        <div className="flex items-center gap-3 mb-6">
-          <span className="h-px w-8 bg-gold" />
+      <section className="container-editorial pt-10 md:pt-14">
+        <div className="flex items-center gap-3 mb-8">
+          <span className="h-px w-10 bg-gold" />
           <span className="category-label">Featured Story</span>
         </div>
         {featured ? (
@@ -78,7 +78,7 @@ export default async function HomePage() {
             showExcerpt
           />
         ) : (
-          <div className="text-center py-20">
+          <div className="text-center py-24">
             <h2 className="font-serif text-2xl text-muted-foreground">
               Welcome to Bliss Media
             </h2>
@@ -91,12 +91,12 @@ export default async function HomePage() {
 
       {/* Trending + Latest grid */}
       {trending.length > 0 && (
-        <section className="container-editorial mt-20">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <section className="container-editorial mt-24">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
             {/* Trending sidebar */}
             <div className="lg:col-span-1 order-2 lg:order-1">
               <SectionHeading title="Trending" subtitle="Most read this week" />
-              <div className="space-y-6">
+              <div className="space-y-7">
                 {trending.map((article, i) => (
                   <div key={article.id} className="flex gap-4">
                     <TrendingNumber number={i + 1} />
@@ -105,7 +105,7 @@ export default async function HomePage() {
                         href={`/article/${article.slug}`}
                         className="group"
                       >
-                        <h3 className="text-base font-serif font-semibold leading-snug group-hover:text-gold transition-colors line-clamp-3">
+                        <h3 className="text-base font-serif font-semibold leading-snug group-hover:text-gold transition-colors duration-200 line-clamp-3">
                           {article.title}
                         </h3>
                       </Link>
@@ -127,7 +127,7 @@ export default async function HomePage() {
                 href="/search"
                 hrefLabel="View all"
               />
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-10">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-12">
                 {latest.slice(0, 4).map((article) => (
                   <ArticleCard
                     key={article.id}
@@ -152,7 +152,7 @@ export default async function HomePage() {
         return (
           <section
             key={category.id}
-            className={`container-editorial mt-20 ${idx % 2 === 1 ? 'bg-card/30 -mx-4 px-4 py-12 rounded-sm' : ''}`}
+            className={`container-editorial mt-24 ${idx % 2 === 1 ? 'bg-card/40 -mx-4 px-4 py-16 rounded-xl' : ''}`}
           >
             <SectionHeading
               title={category.name}
@@ -170,7 +170,7 @@ export default async function HomePage() {
               />
 
               {/* Secondary stories */}
-              <div className="space-y-6">
+              <div className="space-y-7">
                 {rest.map((article) => (
                   <ArticleCard
                     key={article.id}
@@ -187,12 +187,12 @@ export default async function HomePage() {
 
       {/* Editor's Picks */}
       {editorsPicks.length > 0 && (
-        <section className="container-editorial mt-20">
+        <section className="container-editorial mt-24">
           <SectionHeading
             title="Editor's Picks"
             subtitle="Hand-selected by our editorial team"
           />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
             {editorsPicks.map((article) => (
               <ArticleCard
                 key={article.id}
@@ -210,21 +210,27 @@ export default async function HomePage() {
       {/* Newsletter section */}
       <section
         id="newsletter"
-        className="mt-24 bg-foreground text-background py-20"
+        className="mt-28 bg-foreground text-background py-24 relative overflow-hidden"
       >
-        <div className="container-editorial text-center max-w-2xl mx-auto">
-          <p className="category-label text-gold mb-4">Newsletter</p>
+        {/* Decorative gradient accent */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gold/10 blur-[100px] rounded-full pointer-events-none" />
+        <div className="container-editorial text-center max-w-2xl mx-auto relative">
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <span className="h-px w-8 bg-gold" />
+            <span className="category-label text-gold">Newsletter</span>
+            <span className="h-px w-8 bg-gold" />
+          </div>
           <h2 className="font-serif text-3xl md:text-4xl font-bold leading-tight">
             The best of Bliss Media, in your inbox
           </h2>
-          <p className="mt-4 text-background/70 font-sans text-lg leading-relaxed">
+          <p className="mt-5 text-background/65 font-sans text-lg leading-relaxed">
             Join thousands of readers for a weekly curated digest of our
             finest stories across technology, culture, business, and beyond.
           </p>
-          <div className="mt-8 flex justify-center">
+          <div className="mt-10 flex justify-center">
             <NewsletterForm />
           </div>
-          <p className="mt-4 text-xs text-background/50 font-sans">
+          <p className="mt-5 text-xs text-background/40 font-sans">
             No spam. Unsubscribe at any time.
           </p>
         </div>

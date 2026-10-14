@@ -33,11 +33,8 @@ export function CommentSection({ articleId, comments }: CommentSectionProps) {
       if (error) {
         toast.error('Failed to submit comment. Please try again.');
       } else {
-        toast.success(
-          'Comment submitted. It will appear after moderation.'
-        );
+        toast.success('Comment submitted. It will appear after moderation.');
         setBody('');
-        // Optimistically show the comment as pending
         const optimistic: Comment = {
           id: 'temp-' + Date.now(),
           article_id: articleId,
@@ -55,9 +52,11 @@ export function CommentSection({ articleId, comments }: CommentSectionProps) {
   };
 
   return (
-    <div className="mt-16">
+    <div className="mt-20">
       <div className="flex items-center gap-3 mb-8">
-        <MessageSquare className="w-5 h-5 text-gold" />
+        <div className="w-9 h-9 rounded-lg bg-gold/10 flex items-center justify-center">
+          <MessageSquare className="w-[18px] h-[18px] text-gold" />
+        </div>
         <h2 className="font-serif text-2xl font-bold">
           Discussion ({localComments.length})
         </h2>
@@ -66,7 +65,7 @@ export function CommentSection({ articleId, comments }: CommentSectionProps) {
       {/* Comment form */}
       <form
         onSubmit={handleSubmit}
-        className="mb-10 p-6 bg-card border border-border rounded-sm space-y-4"
+        className="mb-12 p-6 bg-card border border-border rounded-xl space-y-4 shadow-sm"
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <input
@@ -75,7 +74,7 @@ export function CommentSection({ articleId, comments }: CommentSectionProps) {
             onChange={(e) => setName(e.target.value)}
             placeholder="Your name"
             required
-            className="px-4 py-2.5 bg-background border border-border rounded-sm text-sm font-sans text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-gold"
+            className="input-premium"
           />
           <input
             type="email"
@@ -83,7 +82,7 @@ export function CommentSection({ articleId, comments }: CommentSectionProps) {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Your email (not published)"
             required
-            className="px-4 py-2.5 bg-background border border-border rounded-sm text-sm font-sans text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-gold"
+            className="input-premium"
           />
         </div>
         <textarea
@@ -92,7 +91,7 @@ export function CommentSection({ articleId, comments }: CommentSectionProps) {
           placeholder="Share your thoughts…"
           required
           rows={4}
-          className="w-full px-4 py-2.5 bg-background border border-border rounded-sm text-sm font-sans text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-gold resize-y"
+          className="w-full px-4 py-2.5 bg-background border border-border rounded-md text-sm font-sans text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold/50 transition-all resize-y"
         />
         <div className="flex items-center justify-between">
           <p className="text-xs text-muted-foreground font-sans">
@@ -101,7 +100,7 @@ export function CommentSection({ articleId, comments }: CommentSectionProps) {
           <button
             type="submit"
             disabled={isPending || !body.trim()}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-foreground text-background text-sm font-sans font-semibold rounded-sm hover:bg-foreground/90 transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-foreground text-background text-sm font-sans font-semibold rounded-md hover:bg-foreground/90 transition-colors disabled:opacity-50"
           >
             {isPending ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -125,11 +124,11 @@ export function CommentSection({ articleId, comments }: CommentSectionProps) {
           {localComments.map((comment) => (
             <div
               key={comment.id}
-              className="p-5 border-l-2 border-border hover:border-gold transition-colors"
+              className="p-5 border-l-2 border-border hover:border-gold transition-colors duration-200 bg-card/50 rounded-r-lg"
             >
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-                  <span className="font-serif text-sm font-bold text-muted-foreground">
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-gold/20 to-gold/5 flex items-center justify-center flex-shrink-0">
+                  <span className="font-serif text-sm font-bold text-gold">
                     {comment.author_name.charAt(0).toUpperCase()}
                   </span>
                 </div>
@@ -140,12 +139,12 @@ export function CommentSection({ articleId, comments }: CommentSectionProps) {
                   <p className="text-xs text-muted-foreground font-sans">
                     {formatRelativeTime(comment.created_at)}
                     {comment.status === 'pending' && (
-                      <span className="ml-2 text-gold">· Pending review</span>
+                      <span className="ml-2 text-gold font-medium">· Pending review</span>
                     )}
                   </p>
                 </div>
               </div>
-              <p className="font-sans text-foreground/90 leading-relaxed">
+              <p className="font-sans text-foreground/90 leading-relaxed pl-12">
                 {comment.body}
               </p>
             </div>

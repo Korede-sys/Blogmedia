@@ -15,7 +15,6 @@ export function ContactForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Simulate sending — in production this would call an edge function
     await new Promise((r) => setTimeout(r, 1000));
     setLoading(false);
     setSent(true);
@@ -24,7 +23,10 @@ export function ContactForm() {
 
   if (sent) {
     return (
-      <div className="p-8 bg-card border border-border rounded-sm text-center">
+      <div className="p-10 bg-card border border-border rounded-xl text-center shadow-sm">
+        <div className="w-14 h-14 rounded-full bg-gold/10 flex items-center justify-center mx-auto mb-4">
+          <Send className="w-6 h-6 text-gold" />
+        </div>
         <h3 className="font-serif text-xl font-bold mb-2">Message Sent</h3>
         <p className="text-muted-foreground font-sans">
           Thank you for reaching out. We will respond as soon as possible.
@@ -37,7 +39,7 @@ export function ContactForm() {
             setSubject('');
             setMessage('');
           }}
-          className="mt-6 text-sm font-sans text-gold hover:text-gold/80 transition-colors"
+          className="mt-6 text-sm font-sans text-gold hover:text-gold/80 transition-colors font-medium"
         >
           Send another message
         </button>
@@ -46,10 +48,10 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <form onSubmit={handleSubmit} className="space-y-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
-          <label className="block text-xs font-sans uppercase tracking-wider text-muted-foreground mb-2">
+          <label className="block text-xs font-sans uppercase tracking-wider text-muted-foreground mb-2 font-semibold">
             Name
           </label>
           <input
@@ -57,12 +59,12 @@ export function ContactForm() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="w-full px-4 py-3 bg-background border border-border rounded-sm text-sm font-sans text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-gold"
+            className="input-premium"
             placeholder="Your name"
           />
         </div>
         <div>
-          <label className="block text-xs font-sans uppercase tracking-wider text-muted-foreground mb-2">
+          <label className="block text-xs font-sans uppercase tracking-wider text-muted-foreground mb-2 font-semibold">
             Email
           </label>
           <input
@@ -70,13 +72,13 @@ export function ContactForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full px-4 py-3 bg-background border border-border rounded-sm text-sm font-sans text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-gold"
+            className="input-premium"
             placeholder="you@example.com"
           />
         </div>
       </div>
       <div>
-        <label className="block text-xs font-sans uppercase tracking-wider text-muted-foreground mb-2">
+        <label className="block text-xs font-sans uppercase tracking-wider text-muted-foreground mb-2 font-semibold">
           Subject
         </label>
         <input
@@ -84,12 +86,12 @@ export function ContactForm() {
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
           required
-          className="w-full px-4 py-3 bg-background border border-border rounded-sm text-sm font-sans text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-gold"
+          className="input-premium"
           placeholder="What is this about?"
         />
       </div>
       <div>
-        <label className="block text-xs font-sans uppercase tracking-wider text-muted-foreground mb-2">
+        <label className="block text-xs font-sans uppercase tracking-wider text-muted-foreground mb-2 font-semibold">
           Message
         </label>
         <textarea
@@ -97,14 +99,14 @@ export function ContactForm() {
           onChange={(e) => setMessage(e.target.value)}
           required
           rows={6}
-          className="w-full px-4 py-3 bg-background border border-border rounded-sm text-sm font-sans text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-gold resize-y"
+          className="w-full px-4 py-3 bg-background border border-border rounded-md text-sm font-sans text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold/50 transition-all resize-y"
           placeholder="Your message…"
         />
       </div>
       <button
         type="submit"
         disabled={loading}
-        className="inline-flex items-center gap-2 px-6 py-3 bg-foreground text-background text-sm font-sans font-semibold rounded-sm hover:bg-foreground/90 transition-colors disabled:opacity-50"
+        className="inline-flex items-center gap-2 px-6 py-3 bg-foreground text-background text-sm font-sans font-semibold rounded-md hover:bg-foreground/90 transition-colors disabled:opacity-50"
       >
         {loading ? (
           <Loader2 className="w-4 h-4 animate-spin" />

@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { Search, Menu, X, ChevronDown } from 'lucide-react';
+import { Search, Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from '@/components/public/theme-toggle';
 
 interface NavLink {
   label: string;
@@ -31,7 +32,7 @@ export function SiteHeader() {
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener('scroll', onScroll);
+    window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
@@ -48,14 +49,14 @@ export function SiteHeader() {
         className={cn(
           'sticky top-0 z-40 w-full transition-all duration-300',
           scrolled
-            ? 'bg-background/95 backdrop-blur-sm border-b border-border shadow-sm'
-            : 'bg-background border-b border-border/50'
+            ? 'bg-background/80 backdrop-blur-xl border-b border-border/60 shadow-sm'
+            : 'bg-background/95 backdrop-blur-sm border-b border-border/40'
         )}
       >
         {/* Top bar */}
-        <div className="border-b border-border/40 hidden md:block">
+        <div className="border-b border-border/30 hidden md:block">
           <div className="container-editorial flex items-center justify-between py-2">
-            <p className="text-xs text-muted-foreground font-sans tracking-wide">
+            <p className="text-[0.6875rem] text-muted-foreground font-sans tracking-wide">
               {new Date().toLocaleDateString('en-US', {
                 weekday: 'long',
                 year: 'numeric',
@@ -63,16 +64,17 @@ export function SiteHeader() {
                 day: 'numeric',
               })}
             </p>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-5">
               <Link
                 href="/admin"
-                className="text-xs text-muted-foreground hover:text-gold transition-colors font-sans"
+                className="text-[0.6875rem] text-muted-foreground hover:text-gold transition-colors font-sans font-medium uppercase tracking-wider"
               >
                 Dashboard
               </Link>
+              <span className="w-px h-3 bg-border" />
               <Link
                 href="/auth/sign-in"
-                className="text-xs text-muted-foreground hover:text-gold transition-colors font-sans"
+                className="text-[0.6875rem] text-muted-foreground hover:text-gold transition-colors font-sans font-medium uppercase tracking-wider"
               >
                 Sign In
               </Link>
@@ -82,10 +84,10 @@ export function SiteHeader() {
 
         {/* Main header */}
         <div className="container-editorial">
-          <div className="flex items-center justify-between py-4 md:py-6">
+          <div className="flex items-center justify-between py-5 md:py-7">
             {/* Mobile menu button */}
             <button
-              className="md:hidden p-2 -ml-2 text-foreground"
+              className="md:hidden p-2 -ml-2 text-foreground hover:text-gold transition-colors"
               onClick={() => setMobileOpen(true)}
               aria-label="Open menu"
             >
@@ -93,56 +95,61 @@ export function SiteHeader() {
             </button>
 
             {/* Logo */}
-            <Link href="/" className="flex-1 text-center md:flex-none">
+            <Link href="/" className="flex-1 text-center md:flex-none md:mr-auto">
               <span className="font-serif text-2xl md:text-3xl font-bold tracking-tight text-foreground">
                 BLISS<span className="text-gold">.</span>
               </span>
-              <span className="block text-[0.625rem] md:text-xs tracking-[0.3em] uppercase text-muted-foreground font-sans mt-0.5">
+              <span className="block text-[0.625rem] md:text-[0.6875rem] tracking-[0.32em] uppercase text-muted-foreground font-sans mt-0.5">
                 Media
               </span>
             </Link>
 
             {/* Desktop actions */}
-            <div className="hidden md:flex items-center gap-3">
+            <div className="hidden md:flex items-center gap-1.5 md:ml-auto">
               <button
                 onClick={() => setSearchOpen(!searchOpen)}
+                className="w-9 h-9 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground hover:bg-secondary transition-all duration-200"
+                aria-label="Search"
+              >
+                <Search className="w-[18px] h-[18px]" />
+              </button>
+              <ThemeToggle />
+            </div>
+
+            {/* Mobile search + theme */}
+            <div className="md:hidden flex items-center gap-1">
+              <button
                 className="p-2 text-foreground hover:text-gold transition-colors"
+                onClick={() => setSearchOpen(!searchOpen)}
                 aria-label="Search"
               >
                 <Search className="w-5 h-5" />
               </button>
+              <ThemeToggle />
             </div>
-
-            {/* Mobile search */}
-            <button
-              className="md:hidden p-2 -mr-2 text-foreground"
-              onClick={() => setSearchOpen(!searchOpen)}
-              aria-label="Search"
-            >
-              <Search className="w-5 h-5" />
-            </button>
           </div>
         </div>
 
         {/* Desktop navigation */}
-        <nav className="hidden md:block border-t border-border/60">
+        <nav className="hidden md:block border-t border-border/40">
           <div className="container-editorial">
-            <ul className="flex items-center justify-center gap-8 py-3">
+            <ul className="flex items-center justify-center gap-10 py-3.5">
               {CATEGORIES.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm font-sans font-medium text-foreground/80 hover:text-gold transition-colors link-gold"
+                    className="text-[0.8125rem] font-sans font-medium text-foreground/75 hover:text-gold transition-colors duration-200 link-gold"
                   >
                     {link.label}
                   </Link>
                 </li>
               ))}
+              <span className="w-px h-3.5 bg-border/60" />
               {STATIC_LINKS.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm font-sans font-medium text-foreground/80 hover:text-gold transition-colors link-gold"
+                    className="text-[0.8125rem] font-sans font-medium text-foreground/75 hover:text-gold transition-colors duration-200 link-gold"
                   >
                     {link.label}
                   </Link>
@@ -154,8 +161,8 @@ export function SiteHeader() {
 
         {/* Search bar expand */}
         {searchOpen && (
-          <div className="border-t border-border bg-background animate-fade-in">
-            <div className="container-editorial py-4">
+          <div className="border-t border-border bg-background/95 backdrop-blur-sm animate-fade-in">
+            <div className="container-editorial py-5">
               <form onSubmit={handleSearch} className="flex items-center gap-3">
                 <Search className="w-5 h-5 text-muted-foreground flex-shrink-0" />
                 <input
@@ -169,7 +176,7 @@ export function SiteHeader() {
                 <button
                   type="button"
                   onClick={() => setSearchOpen(false)}
-                  className="p-1 text-muted-foreground hover:text-foreground"
+                  className="p-1.5 text-muted-foreground hover:text-foreground rounded-md hover:bg-secondary transition-all"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -183,17 +190,17 @@ export function SiteHeader() {
       {mobileOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
           <div
-            className="absolute inset-0 bg-foreground/20 backdrop-blur-sm"
+            className="absolute inset-0 bg-foreground/30 backdrop-blur-sm animate-fade-in"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="absolute left-0 top-0 bottom-0 w-72 bg-background shadow-xl animate-slide-in-right overflow-y-auto">
-            <div className="flex items-center justify-between p-4 border-b border-border">
+          <div className="absolute left-0 top-0 bottom-0 w-72 bg-background shadow-xl overflow-y-auto" style={{ animation: 'slideInRight 0.3s ease-out' }}>
+            <div className="flex items-center justify-between p-5 border-b border-border">
               <span className="font-serif text-xl font-bold">
                 BLISS<span className="text-gold">.</span>
               </span>
               <button
                 onClick={() => setMobileOpen(false)}
-                className="p-2 text-foreground"
+                className="p-2 text-foreground hover:bg-secondary rounded-md transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -204,7 +211,7 @@ export function SiteHeader() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="block py-3 px-3 text-foreground hover:bg-muted rounded-sm font-sans font-medium transition-colors"
+                      className="block py-3 px-3 text-foreground hover:bg-secondary rounded-md font-sans font-medium transition-colors"
                       onClick={() => setMobileOpen(false)}
                     >
                       {link.label}
@@ -216,7 +223,7 @@ export function SiteHeader() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="block py-3 px-3 text-foreground hover:bg-muted rounded-sm font-sans font-medium transition-colors"
+                      className="block py-3 px-3 text-foreground hover:bg-secondary rounded-md font-sans font-medium transition-colors"
                       onClick={() => setMobileOpen(false)}
                     >
                       {link.label}
@@ -227,7 +234,7 @@ export function SiteHeader() {
                 <li>
                   <Link
                     href="/admin"
-                    className="block py-3 px-3 text-muted-foreground hover:bg-muted rounded-sm font-sans text-sm transition-colors"
+                    className="block py-3 px-3 text-muted-foreground hover:bg-secondary rounded-md font-sans text-sm transition-colors"
                     onClick={() => setMobileOpen(false)}
                   >
                     Dashboard
@@ -236,7 +243,7 @@ export function SiteHeader() {
                 <li>
                   <Link
                     href="/auth/sign-in"
-                    className="block py-3 px-3 text-muted-foreground hover:bg-muted rounded-sm font-sans text-sm transition-colors"
+                    className="block py-3 px-3 text-muted-foreground hover:bg-secondary rounded-md font-sans text-sm transition-colors"
                     onClick={() => setMobileOpen(false)}
                   >
                     Sign In

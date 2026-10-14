@@ -47,7 +47,7 @@ export function SocialShare({ title, slug }: SocialShareProps) {
 
   return (
     <div className="flex items-center gap-4">
-      <span className="text-sm font-sans text-muted-foreground">Share</span>
+      <span className="text-sm font-sans text-muted-foreground font-medium">Share</span>
       <div className="flex items-center gap-2">
         {shareLinks.map((link) => {
           const Icon = link.icon;
@@ -58,7 +58,7 @@ export function SocialShare({ title, slug }: SocialShareProps) {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={link.label}
-              className="w-9 h-9 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:bg-gold hover:text-foreground transition-all"
+              className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:bg-gold hover:text-foreground transition-all duration-200"
             >
               <Icon className="w-4 h-4" />
             </a>
@@ -67,13 +67,9 @@ export function SocialShare({ title, slug }: SocialShareProps) {
         <button
           onClick={handleCopy}
           aria-label="Copy link"
-          className="w-9 h-9 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:bg-gold hover:text-foreground transition-all"
+          className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:bg-gold hover:text-foreground transition-all duration-200"
         >
-          {copied ? (
-            <Check className="w-4 h-4" />
-          ) : (
-            <Link2 className="w-4 h-4" />
-          )}
+          {copied ? <Check className="w-4 h-4" /> : <Link2 className="w-4 h-4" />}
         </button>
       </div>
     </div>

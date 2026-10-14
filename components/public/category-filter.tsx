@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import type { Tag } from '@/lib/types';
+import { cn } from '@/lib/utils';
 
 interface CategoryFilterProps {
   tags: Tag[];
@@ -26,29 +27,26 @@ export function CategoryFilter({
     return qs ? `${basePath}?${qs}` : basePath;
   };
 
+  const filterClass = (active: boolean) =>
+    cn(
+      'px-3.5 py-1.5 text-xs font-sans rounded-md transition-all duration-200 font-medium',
+      active
+        ? 'bg-foreground text-background'
+        : 'bg-secondary text-muted-foreground hover:bg-secondary/70 hover:text-foreground'
+    );
+
   return (
-    <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-border">
+    <div className="flex flex-wrap items-center justify-between gap-4 pb-8 border-b border-border">
       {/* Tag filters */}
       <div className="flex flex-wrap items-center gap-2">
-        <a
-          href={basePath}
-          className={`px-3 py-1.5 text-xs font-sans rounded-sm transition-colors ${
-            !currentTag
-              ? 'bg-foreground text-background'
-              : 'bg-muted text-muted-foreground hover:bg-muted/70'
-          }`}
-        >
+        <a href={basePath} className={filterClass(!currentTag)}>
           All
         </a>
         {tags.map((tag) => (
           <a
             key={tag.id}
             href={buildUrl({ tag: tag.slug, sort: currentSort })}
-            className={`px-3 py-1.5 text-xs font-sans rounded-sm transition-colors ${
-              currentTag === tag.slug
-                ? 'bg-foreground text-background'
-                : 'bg-muted text-muted-foreground hover:bg-muted/70'
-            }`}
+            className={filterClass(currentTag === tag.slug)}
           >
             {tag.name}
           </a>
@@ -60,21 +58,13 @@ export function CategoryFilter({
         <span className="text-xs font-sans text-muted-foreground">Sort:</span>
         <button
           onClick={() => router.push(buildUrl({ tag: currentTag, sort: 'newest' }))}
-          className={`px-3 py-1.5 text-xs font-sans rounded-sm transition-colors ${
-            currentSort === 'newest'
-              ? 'bg-foreground text-background'
-              : 'bg-muted text-muted-foreground hover:bg-muted/70'
-          }`}
+          className={filterClass(currentSort === 'newest')}
         >
           Newest
         </button>
         <button
           onClick={() => router.push(buildUrl({ tag: currentTag, sort: 'oldest' }))}
-          className={`px-3 py-1.5 text-xs font-sans rounded-sm transition-colors ${
-            currentSort === 'oldest'
-              ? 'bg-foreground text-background'
-              : 'bg-muted text-muted-foreground hover:bg-muted/70'
-          }`}
+          className={filterClass(currentSort === 'oldest')}
         >
           Oldest
         </button>

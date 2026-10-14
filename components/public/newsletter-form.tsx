@@ -37,13 +37,13 @@ export function NewsletterForm({ variant = 'full' }: NewsletterFormProps) {
 
   if (success) {
     return (
-      <div className="flex items-center gap-3 text-foreground">
-        <div className="w-10 h-10 rounded-full bg-gold/15 flex items-center justify-center">
+      <div className="flex items-center gap-3 text-background">
+        <div className="w-10 h-10 rounded-full bg-gold/20 flex items-center justify-center">
           <Check className="w-5 h-5 text-gold" />
         </div>
-        <div>
+        <div className="text-left">
           <p className="font-sans font-semibold">You are subscribed!</p>
-          <p className="text-sm text-muted-foreground font-sans">
+          <p className="text-sm text-background/60 font-sans">
             Watch your inbox for the next issue.
           </p>
         </div>
@@ -60,12 +60,12 @@ export function NewsletterForm({ variant = 'full' }: NewsletterFormProps) {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Your email"
           required
-          className="flex-1 px-4 py-2.5 bg-background border border-border rounded-sm text-sm font-sans text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-gold"
+          className="flex-1 px-4 py-2.5 bg-background border border-border rounded-md text-sm font-sans text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold/50 transition-all"
         />
         <button
           type="submit"
           disabled={loading}
-          className="px-4 py-2.5 bg-foreground text-background text-sm font-sans font-semibold rounded-sm hover:bg-foreground/90 transition-colors disabled:opacity-50 flex items-center gap-2"
+          className="px-4 py-2.5 bg-foreground text-background text-sm font-sans font-semibold rounded-md hover:bg-foreground/90 transition-colors disabled:opacity-50 flex items-center gap-2"
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Join'}
         </button>
@@ -86,13 +86,13 @@ export function NewsletterForm({ variant = 'full' }: NewsletterFormProps) {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Enter your email address"
           required
-          className="w-full pl-12 pr-4 py-3.5 bg-background border border-border rounded-sm text-foreground font-sans placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-gold"
+          className="w-full pl-12 pr-4 py-3.5 bg-background/5 border border-background/20 rounded-md text-background font-sans placeholder:text-background/40 focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold/50 transition-all"
         />
       </div>
       <button
         type="submit"
         disabled={loading}
-        className="px-6 py-3.5 bg-gold text-foreground font-sans font-semibold rounded-sm hover:bg-gold/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 whitespace-nowrap"
+        className="px-6 py-3.5 bg-gold text-foreground font-sans font-semibold rounded-md hover:bg-gold/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2 whitespace-nowrap"
       >
         {loading ? (
           <Loader2 className="w-5 h-5 animate-spin" />

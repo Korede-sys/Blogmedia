@@ -17,6 +17,7 @@ import {
   Database,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from '@/components/public/theme-toggle';
 
 const NAV_ITEMS = [
   { label: 'Overview', href: '/admin', icon: LayoutDashboard },
@@ -56,7 +57,7 @@ export default function AdminLayout({
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
-          <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin mx-auto" />
+          <div className="w-10 h-10 border-2 border-gold border-t-transparent rounded-full animate-spin mx-auto" />
           <p className="mt-4 text-sm text-muted-foreground font-sans">
             Loading dashboard…
           </p>
@@ -75,7 +76,7 @@ export default function AdminLayout({
   };
 
   return (
-    <div className="min-h-screen bg-muted/30 flex">
+    <div className="min-h-screen bg-background flex">
       {/* Sidebar (desktop) */}
       <aside className="hidden md:flex flex-col w-64 bg-foreground text-background fixed inset-y-0 left-0 z-30">
         <div className="p-6 border-b border-background/10">
@@ -83,7 +84,7 @@ export default function AdminLayout({
             <span className="font-serif text-xl font-bold">
               BLISS<span className="text-gold">.</span>
             </span>
-            <span className="block text-xs tracking-[0.2em] uppercase text-background/50 font-sans mt-0.5">
+            <span className="block text-[0.6875rem] tracking-[0.2em] uppercase text-background/50 font-sans mt-0.5">
               Dashboard
             </span>
           </Link>
@@ -97,10 +98,10 @@ export default function AdminLayout({
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'flex items-center gap-3 px-4 py-2.5 rounded-sm text-sm font-sans transition-colors',
+                  'flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-sans transition-all duration-200',
                   active
-                    ? 'bg-background/10 text-background font-medium'
-                    : 'text-background/70 hover:text-background hover:bg-background/5'
+                    ? 'bg-gold text-foreground font-semibold shadow-sm'
+                    : 'text-background/70 hover:text-background hover:bg-background/10'
                 )}
               >
                 <Icon className="w-4 h-4" />
@@ -109,17 +110,17 @@ export default function AdminLayout({
             );
           })}
         </nav>
-        <div className="p-4 border-t border-background/10 space-y-2">
+        <div className="p-4 border-t border-background/10 space-y-1">
           <Link
             href="/"
-            className="flex items-center gap-3 px-4 py-2.5 rounded-sm text-sm font-sans text-background/70 hover:text-background hover:bg-background/5 transition-colors"
+            className="flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-sans text-background/70 hover:text-background hover:bg-background/10 transition-all duration-200"
           >
             <ExternalLink className="w-4 h-4" />
             View Site
           </Link>
           <button
             onClick={handleSignOut}
-            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-sm text-sm font-sans text-background/70 hover:text-background hover:bg-background/5 transition-colors"
+            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-sans text-background/70 hover:text-background hover:bg-background/10 transition-all duration-200"
           >
             <LogOut className="w-4 h-4" />
             Sign Out
@@ -131,7 +132,7 @@ export default function AdminLayout({
       {sidebarOpen && (
         <div className="fixed inset-0 z-40 md:hidden">
           <div
-            className="absolute inset-0 bg-foreground/40"
+            className="absolute inset-0 bg-foreground/40 backdrop-blur-sm animate-fade-in"
             onClick={() => setSidebarOpen(false)}
           />
           <aside className="absolute left-0 top-0 bottom-0 w-64 bg-foreground text-background">
@@ -141,7 +142,7 @@ export default function AdminLayout({
               </span>
               <button
                 onClick={() => setSidebarOpen(false)}
-                className="text-background/70"
+                className="text-background/70 hover:text-background"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -156,10 +157,10 @@ export default function AdminLayout({
                     href={item.href}
                     onClick={() => setSidebarOpen(false)}
                     className={cn(
-                      'flex items-center gap-3 px-4 py-2.5 rounded-sm text-sm font-sans transition-colors',
+                      'flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-sans transition-all duration-200',
                       active
-                        ? 'bg-background/10 text-background font-medium'
-                        : 'text-background/70 hover:text-background hover:bg-background/5'
+                        ? 'bg-gold text-foreground font-semibold'
+                        : 'text-background/70 hover:text-background hover:bg-background/10'
                     )}
                   >
                     <Icon className="w-4 h-4" />
@@ -170,14 +171,14 @@ export default function AdminLayout({
               <Link
                 href="/"
                 onClick={() => setSidebarOpen(false)}
-                className="flex items-center gap-3 px-4 py-2.5 rounded-sm text-sm font-sans text-background/70 hover:text-background hover:bg-background/5"
+                className="flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-sans text-background/70 hover:text-background hover:bg-background/10"
               >
                 <ExternalLink className="w-4 h-4" />
                 View Site
               </Link>
               <button
                 onClick={handleSignOut}
-                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-sm text-sm font-sans text-background/70 hover:text-background hover:bg-background/5"
+                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-sans text-background/70 hover:text-background hover:bg-background/10"
               >
                 <LogOut className="w-4 h-4" />
                 Sign Out
@@ -190,15 +191,17 @@ export default function AdminLayout({
       {/* Main content */}
       <div className="flex-1 md:ml-64 min-w-0">
         {/* Top bar */}
-        <header className="sticky top-0 z-20 bg-background border-b border-border px-4 md:px-8 py-4 flex items-center justify-between">
+        <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-xl border-b border-border px-4 md:px-8 py-4 flex items-center justify-between">
           <button
-            className="md:hidden p-2 -ml-2 text-foreground"
+            className="md:hidden p-2 -ml-2 text-foreground hover:bg-secondary rounded-md transition-colors"
             onClick={() => setSidebarOpen(true)}
           >
             <Menu className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-3 ml-auto">
-            <div className="text-right">
+            <ThemeToggle />
+            <div className="w-px h-6 bg-border" />
+            <div className="text-right hidden sm:block">
               <p className="text-sm font-sans font-medium text-foreground">
                 {profile?.full_name || 'User'}
               </p>
@@ -206,7 +209,7 @@ export default function AdminLayout({
                 {profile?.role}
               </p>
             </div>
-            <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-gold/20 to-gold/5 flex items-center justify-center">
               <span className="font-serif text-sm font-bold text-gold">
                 {(profile?.full_name || '?').charAt(0).toUpperCase()}
               </span>
