@@ -1,0 +1,9 @@
+project_id = "bliss-media"
+
+[functions.setup-admin]
+verify_jwt = false
+entrypoint = "./functions/setup-admin/index.ts"
+
+[functions.seed-articles]
+verify_jwt = false
+entrypoint = "./functions/seed-articles/index.ts"

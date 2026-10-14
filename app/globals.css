@@ -1,0 +1,176 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Warm ivory and off-white backgrounds */
+    --background: 42 33% 97%;
+    --foreground: 20 14% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 20 14% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 14% 10%;
+
+    /* Near-black primary */
+    --primary: 20 14% 10%;
+    --primary-foreground: 42 33% 97%;
+
+    /* Muted warm gray */
+    --secondary: 40 20% 92%;
+    --secondary-foreground: 20 14% 10%;
+
+    --muted: 40 16% 90%;
+    --muted-foreground: 25 10% 40%;
+
+    /* Gold accent */
+    --accent: 42 74% 49%;
+    --accent-foreground: 20 14% 10%;
+
+    --gold: 42 74% 49%;
+    --gold-foreground: 20 14% 10%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 40 15% 86%;
+    --input: 40 15% 86%;
+    --ring: 42 74% 49%;
+
+    --chart-1: 42 74% 49%;
+    --chart-2: 200 70% 45%;
+    --chart-3: 150 55% 40%;
+    --chart-4: 10 75% 55%;
+    --chart-5: 280 60% 55%;
+
+    --radius: 0.25rem;
+  }
+
+  .dark {
+    --background: 20 14% 8%;
+    --foreground: 42 33% 95%;
+    --card: 20 14% 12%;
+    --card-foreground: 42 33% 95%;
+    --popover: 20 14% 12%;
+    --popover-foreground: 42 33% 95%;
+    --primary: 42 33% 95%;
+    --primary-foreground: 20 14% 8%;
+    --secondary: 20 10% 18%;
+    --secondary-foreground: 42 33% 95%;
+    --muted: 20 10% 18%;
+    --muted-foreground: 40 10% 60%;
+    --accent: 42 74% 49%;
+    --accent-foreground: 20 14% 8%;
+    --gold: 42 74% 49%;
+    --gold-foreground: 20 14% 8%;
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 20 10% 22%;
+    --input: 20 10% 22%;
+    --ring: 42 74% 49%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "ss01", "cv01", "cv03";
+  }
+
+  /* Editorial typography defaults */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  /* Article body typography */
+  .article-body {
+    @apply text-[1.125rem] leading-[1.75] text-foreground/90;
+  }
+  .article-body p {
+    @apply mb-6;
+  }
+  .article-body h2 {
+    @apply text-2xl font-serif font-bold mt-12 mb-4;
+  }
+  .article-body h3 {
+    @apply text-xl font-serif font-bold mt-8 mb-3;
+  }
+  .article-body ul {
+    @apply list-disc pl-6 mb-6 space-y-2;
+  }
+  .article-body ol {
+    @apply list-decimal pl-6 mb-6 space-y-2;
+  }
+  .article-body blockquote {
+    @apply border-l-4 border-gold pl-6 my-8 italic text-lg font-serif text-foreground/80;
+  }
+  .article-body a {
+    @apply text-gold underline underline-offset-2 hover:text-gold/80 transition-colors;
+  }
+  .article-body img {
+    @apply rounded-sm my-8 w-full;
+  }
+  .article-body figure {
+    @apply my-8;
+  }
+  .article-body figcaption {
+    @apply text-sm text-muted-foreground mt-2 text-center italic;
+  }
+  .article-body strong {
+    @apply font-bold text-foreground;
+  }
+}
+
+@layer components {
+  .container-editorial {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  .container-article {
+    @apply max-w-3xl mx-auto px-4 sm:px-6;
+  }
+
+  /* Gold underline animation for links */
+  .link-gold {
+    @apply relative inline-block;
+  }
+  .link-gold::after {
+    content: '';
+    @apply absolute left-0 bottom-0 w-0 h-0.5 bg-gold transition-all duration-300;
+  }
+  .link-gold:hover::after {
+    @apply w-full;
+  }
+
+  /* Category label */
+  .category-label {
+    @apply text-xs font-sans font-semibold uppercase tracking-[0.15em] text-gold;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Reading progress bar */
+.reading-progress {
+  @apply fixed top-0 left-0 h-0.5 bg-gold z-50 transition-all duration-75;
+}
