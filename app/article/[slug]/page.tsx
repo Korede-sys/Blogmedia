@@ -19,7 +19,7 @@ import { CommentSection } from '@/components/public/comment-section';
 import { formatDate } from '@/lib/utils';
 import { Clock, Calendar, ArrowLeft, User } from 'lucide-react';
 
-export const revalidate = 300;
+export const dynamic = 'force-dynamic';
 
 interface PageProps {
   params: { slug: string };

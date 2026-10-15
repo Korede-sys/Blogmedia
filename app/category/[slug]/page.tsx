@@ -12,7 +12,7 @@ import { SectionHeading } from '@/components/public/section-heading';
 import { CategoryFilter } from '@/components/public/category-filter';
 import { NewsletterForm } from '@/components/public/newsletter-form';
 
-export const revalidate = 300;
+export const dynamic = 'force-dynamic';
 
 interface PageProps {
   params: { slug: string };

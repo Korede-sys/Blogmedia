@@ -7,6 +7,7 @@ import type {
   Comment,
   SiteSettings,
   ArticleRevision,
+  Ebook,
 } from './types';
 
 // ============================================================
@@ -392,7 +393,55 @@ export async function incrementViewCount(articleId: string): Promise<void> {
     article_id: articleId,
   });
   if (error) {
-    // Non-critical, don't throw
     console.warn('Failed to increment view count:', error);
   }
+}
+
+// ============================================================
+// EBOOKS
+// ============================================================
+
+export async function getPublishedEbooks(limit?: number): Promise<Ebook[]> {
+  let query = supabase
+    .from('ebooks')
+    .select('*')
+    .eq('status', 'published')
+    .order('published_at', { ascending: false });
+  if (limit) query = query.limit(limit);
+  const { data, error } = await query;
+  if (error) throw error;
+  return (data || []) as unknown as Ebook[];
+}
+
+export async function getFeaturedEbooks(limit = 3): Promise<Ebook[]> {
+  const { data, error } = await supabase
+    .from('ebooks')
+    .select('*')
+    .eq('status', 'published')
+    .eq('featured', true)
+    .order('published_at', { ascending: false })
+    .limit(limit);
+  if (error) throw error;
+  return (data || []) as unknown as Ebook[];
+}
+
+export async function getEbookBySlug(slug: string): Promise<Ebook | null> {
+  const { data, error } = await supabase
+    .from('ebooks')
+    .select('*')
+    .eq('slug', slug)
+    .eq('status', 'published')
+    .maybeSingle();
+  if (error) throw error;
+  return data as unknown as Ebook | null;
+}
+
+export async function getEbookById(id: string): Promise<Ebook | null> {
+  const { data, error } = await supabase
+    .from('ebooks')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle();
+  if (error) throw error;
+  return data as unknown as Ebook | null;
 }

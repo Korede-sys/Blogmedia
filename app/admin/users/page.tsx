@@ -40,20 +40,29 @@ export default function UsersPage() {
   };
 
   const handleRoleChange = async (userId: string, newRole: UserRole) => {
-    // Update profile (RLS allows admin to update)
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .update({ role: newRole })
-      .eq('id', userId);
-
-    if (profileError) {
-      toast.error('Failed to update role: ' + profileError.message);
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      toast.error('You must be signed in');
       return;
     }
 
-    // Update auth metadata via edge function would be needed for app_metadata
-    // For now, update user_metadata which is visible to the client
-    toast.success('Role updated. Note: app_metadata may require server-side update for full enforcement.');
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+    const response = await fetch(`${supabaseUrl}/functions/v1/update-user-role`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({ userId, role: newRole }),
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({ error: 'Request failed' }));
+      toast.error('Failed to update role: ' + err.error);
+      return;
+    }
+
+    toast.success(`Role updated to ${newRole}`);
     loadUsers();
   };
 

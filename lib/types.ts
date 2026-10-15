@@ -132,3 +132,44 @@ export type ArticleInline = {
   text: string;
   marks?: { type: 'bold' | 'italic' | 'link'; attrs?: { href: string } }[];
 };
+
+export type EbookStatus = 'draft' | 'published' | 'archived';
+
+export interface Ebook {
+  id: string;
+  title: string;
+  slug: string;
+  subtitle: string;
+  description: string;
+  author_name: string;
+  price_cents: number;
+  is_free: boolean;
+  cover_image: string;
+  cover_alt: string;
+  file_url: string;
+  file_size_mb: number;
+  page_count: number;
+  isbn: string;
+  tags: string[];
+  status: EbookStatus;
+  featured: boolean;
+  download_count: number;
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type EbookPurchaseStatus = 'pending' | 'paid' | 'refunded' | 'failed';
+
+export interface EbookPurchase {
+  id: string;
+  ebook_id: string;
+  user_id: string | null;
+  email: string;
+  price_paid_cents: number;
+  stripe_session_id: string;
+  stripe_payment_intent_id: string;
+  status: EbookPurchaseStatus;
+  downloaded_at: string | null;
+  created_at: string;
+}

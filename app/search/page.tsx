@@ -5,7 +5,7 @@ import { SiteFooter } from '@/components/public/site-footer';
 import { ArticleCard } from '@/components/public/article-card';
 import { SearchBar } from '@/components/public/search-bar';
 
-export const revalidate = 60;
+export const dynamic = 'force-dynamic';
 
 interface PageProps {
   searchParams: { q?: string; page?: string };

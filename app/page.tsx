@@ -13,18 +13,22 @@ import {
   getEditorsPicks,
   getCategories,
   getArticlesByCategory,
+  getFeaturedEbooks,
 } from '@/lib/queries';
 import { formatRelativeTime } from '@/lib/utils';
+import { EbookCard } from '@/components/public/ebook-card';
+import { BookOpen } from 'lucide-react';
 
-export const revalidate = 300;
+export const dynamic = 'force-dynamic';
 
 async function getHomepageData() {
   try {
-    const [featured, trending, editorsPicks, categories] = await Promise.all([
+    const [featured, trending, editorsPicks, categories, ebooks] = await Promise.all([
       getFeaturedArticle(),
       getTrendingArticles(5),
       getEditorsPicks(3),
       getCategories(),
+      getFeaturedEbooks(3),
     ]);
 
     const categoryData = await Promise.all(
@@ -43,6 +47,7 @@ async function getHomepageData() {
       categories,
       categoryData,
       latest,
+      ebooks,
     };
   } catch (error) {
     console.error('Error loading homepage data:', error);
@@ -53,13 +58,14 @@ async function getHomepageData() {
       categories: [],
       categoryData: [],
       latest: [],
+      ebooks: [],
     };
   }
 }
 
 export default async function HomePage() {
   const data = await getHomepageData();
-  const { featured, trending, editorsPicks, categoryData, latest } = data;
+  const { featured, trending, editorsPicks, categoryData, latest, ebooks } = data;
 
   return (
     <>
@@ -202,6 +208,23 @@ export default async function HomePage() {
                 showAuthor
                 showReadingTime
               />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* E-books section */}
+      {ebooks.length > 0 && (
+        <section className="container-editorial mt-24">
+          <SectionHeading
+            title="E-books"
+            subtitle="Premium downloads from our editorial team"
+            href="/ebooks"
+            hrefLabel="Browse all"
+          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+            {ebooks.map((ebook) => (
+              <EbookCard key={ebook.id} ebook={ebook} variant="featured" />
             ))}
           </div>
         </section>

@@ -20,6 +20,7 @@ const CATEGORIES: NavLink[] = [
 ];
 
 const STATIC_LINKS: NavLink[] = [
+  { label: 'Ebooks', href: '/ebooks' },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ];
@@ -64,21 +65,9 @@ export function SiteHeader() {
                 day: 'numeric',
               })}
             </p>
-            <div className="flex items-center gap-5">
-              <Link
-                href="/admin"
-                className="text-[0.6875rem] text-muted-foreground hover:text-gold transition-colors font-sans font-medium uppercase tracking-wider"
-              >
-                Dashboard
-              </Link>
-              <span className="w-px h-3 bg-border" />
-              <Link
-                href="/auth/sign-in"
-                className="text-[0.6875rem] text-muted-foreground hover:text-gold transition-colors font-sans font-medium uppercase tracking-wider"
-              >
-                Sign In
-              </Link>
-            </div>
+            <p className="text-[0.6875rem] text-muted-foreground font-sans tracking-wide">
+              Stories. Perspectives. Culture.
+            </p>
           </div>
         </div>
 
@@ -230,25 +219,7 @@ export function SiteHeader() {
                     </Link>
                   </li>
                 ))}
-                <li className="border-t border-border my-3" />
-                <li>
-                  <Link
-                    href="/admin"
-                    className="block py-3 px-3 text-muted-foreground hover:bg-secondary rounded-md font-sans text-sm transition-colors"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    Dashboard
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/auth/sign-in"
-                    className="block py-3 px-3 text-muted-foreground hover:bg-secondary rounded-md font-sans text-sm transition-colors"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    Sign In
-                  </Link>
-                </li>
+
               </ul>
             </nav>
           </div>

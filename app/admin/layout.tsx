@@ -15,6 +15,7 @@ import {
   X,
   ExternalLink,
   Database,
+  BookOpen,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/public/theme-toggle';
@@ -22,6 +23,7 @@ import { ThemeToggle } from '@/components/public/theme-toggle';
 const NAV_ITEMS = [
   { label: 'Overview', href: '/admin', icon: LayoutDashboard },
   { label: 'Articles', href: '/admin/articles', icon: FileText },
+  { label: 'Ebooks', href: '/admin/ebooks', icon: BookOpen },
   { label: 'Media', href: '/admin/media', icon: ImageIcon },
   { label: 'Users', href: '/admin/users', icon: Users, adminOnly: true },
   { label: 'Settings', href: '/admin/settings', icon: Settings, adminOnly: true },

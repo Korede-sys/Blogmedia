@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabase-client';
 import { useAuth } from '@/lib/auth-context';
 import { RichTextEditor } from '@/components/admin/rich-text-editor';
+import { ImageUpload } from '@/components/admin/image-upload';
 import { toast } from 'sonner';
 import {
   Save,
@@ -453,21 +454,14 @@ export default function ArticleEditorPage({
 
             <div>
               <label className="block text-xs font-sans uppercase tracking-wider text-muted-foreground mb-2">
-                Cover Image URL
+                Cover Image
               </label>
-              <input
-                type="text"
+              <ImageUpload
                 value={coverImage}
-                onChange={(e) => setCoverImage(e.target.value)}
-                placeholder="https://…"
-                className="w-full px-4 py-2.5 bg-card border border-border rounded-sm text-sm font-sans focus:outline-none focus:ring-1 focus:ring-gold"
+                onChange={setCoverImage}
+                alt={coverAlt}
+                aspectRatio="aspect-[21/9]"
               />
-              {coverImage && (
-                <div className="mt-3 relative aspect-[21/9] overflow-hidden rounded-sm border border-border">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={coverImage} alt={coverAlt} className="w-full h-full object-cover" />
-                </div>
-              )}
               <input
                 type="text"
                 value={coverAlt}

@@ -7,3 +7,11 @@ entrypoint = "./functions/setup-admin/index.ts"
 [functions.seed-articles]
 verify_jwt = false
 entrypoint = "./functions/seed-articles/index.ts"
+
+[functions.update-user-role]
+verify_jwt = true
+entrypoint = "./functions/update-user-role/index.ts"
+
+[functions.ebook-checkout]
+verify_jwt = false
+entrypoint = "./functions/ebook-checkout/index.ts"
