@@ -1,265 +1,336 @@
-import { SiteHeader } from '@/components/public/site-header';
-import { SiteFooter } from '@/components/public/site-footer';
-import { ArticleCard } from '@/components/public/article-card';
-import { NewsletterForm } from '@/components/public/newsletter-form';
-import { SectionHeading } from '@/components/public/section-heading';
-import { TrendingNumber } from '@/components/public/trending-number';
-import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
-import {
-  getPublishedArticles,
-  getFeaturedArticle,
-  getTrendingArticles,
-  getEditorsPicks,
-  getCategories,
-  getArticlesByCategory,
-  getFeaturedEbooks,
-} from '@/lib/queries';
-import { formatRelativeTime } from '@/lib/utils';
-import { EbookCard } from '@/components/public/ebook-card';
-import { BookOpen } from 'lucide-react';
+'use client';
 
-export const dynamic = 'force-dynamic';
+import React, { useState, useEffect, useMemo } from "react";
+import { createClient } from "@/lib/supabase/client"; // Adjust path if using @/lib/supabase
+import { 
+  Sun, 
+  Moon, 
+  Search, 
+  BookOpen, 
+  ShoppingBag, 
+  FileText, 
+  ArrowUpRight, 
+  Sparkles,
+  Layers,
+  DollarSign
+} from "lucide-react";
 
-async function getHomepageData() {
-  try {
-    const [featured, trending, editorsPicks, categories, ebooks] = await Promise.all([
-      getFeaturedArticle(),
-      getTrendingArticles(5),
-      getEditorsPicks(3),
-      getCategories(),
-      getFeaturedEbooks(3),
-    ]);
-
-    const categoryData = await Promise.all(
-      categories.slice(0, 5).map(async (cat) => ({
-        category: cat,
-        articles: await getArticlesByCategory(cat.id, 4),
-      }))
-    );
-
-    const { articles: latest } = await getPublishedArticles({ limit: 6 });
-
-    return {
-      featured,
-      trending,
-      editorsPicks,
-      categories,
-      categoryData,
-      latest,
-      ebooks,
-    };
-  } catch (error) {
-    console.error('Error loading homepage data:', error);
-    return {
-      featured: null,
-      trending: [],
-      editorsPicks: [],
-      categories: [],
-      categoryData: [],
-      latest: [],
-      ebooks: [],
-    };
-  }
+interface Article {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  category: string;
+  cover_image_url: string;
+  author_name: string;
+  published_at: string;
+  read_time: string;
 }
 
-export default async function HomePage() {
-  const data = await getHomepageData();
-  const { featured, trending, editorsPicks, categoryData, latest, ebooks } = data;
+interface EBook {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  cover_image_url: string;
+  download_url?: string;
+  pages: number;
+  format: string;
+}
+
+export default function BlissMediaPage() {
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [activeTab, setActiveTab] = useState<"agency" | "articles" | "ebooks">("agency");
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [ebooks, setEbooks] = useState<EBook[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
+  const isDark = theme === "dark";
+
+  // Fetch data directly from Supabase tables
+  useEffect(() => {
+    async function loadSupabaseData() {
+      setLoading(true);
+      try {
+        const supabase = createClient();
+
+        // Fetch published articles
+        const { data: articlesData } = await supabase
+          .from("articles")
+          .select("*")
+          .order("created_at", { ascending: false });
+
+        // Fetch e-books catalog
+        const { data: ebooksData } = await supabase
+          .from("ebooks")
+          .select("*")
+          .order("created_at", { ascending: false });
+
+        if (articlesData) setArticles(articlesData);
+        if (ebooksData) setEbooks(ebooksData);
+      } catch (error) {
+        console.error("Error fetching Supabase data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadSupabaseData();
+  }, []);
+
+  const filteredArticles = useMemo(() => {
+    return articles.filter((art) => {
+      const matchCat = selectedCategory === "All" || art.category === selectedCategory;
+      const matchSearch = art.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          art.excerpt?.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchCat && matchSearch;
+    });
+  }, [articles, selectedCategory, searchQuery]);
 
   return (
-    <>
-      <SiteHeader />
-
-      {/* Hero / Featured story */}
-      <section className="container-editorial pt-10 md:pt-14">
-        <div className="flex items-center gap-3 mb-8">
-          <span className="h-px w-10 bg-gold" />
-          <span className="category-label">Featured Story</span>
-        </div>
-        {featured ? (
-          <ArticleCard
-            article={featured}
-            variant="featured"
-            showExcerpt
-          />
-        ) : (
-          <div className="text-center py-24">
-            <h2 className="font-serif text-2xl text-muted-foreground">
-              Welcome to Bliss Media
-            </h2>
-            <p className="mt-2 text-muted-foreground font-sans">
-              Featured stories will appear here once published.
-            </p>
+    <div className={`min-h-screen transition-colors duration-200 font-sans ${
+      isDark ? "bg-[#030d09] text-slate-100" : "bg-slate-50 text-slate-900"
+    }`}>
+      {/* Top Navbar */}
+      <header className={`sticky top-0 z-50 border-b backdrop-blur-md transition-colors ${
+        isDark ? "bg-[#051610]/90 border-emerald-900/40" : "bg-white/90 border-slate-200"
+      }`}>
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab("agency")}>
+            <div className="p-2.5 bg-emerald-500 rounded-2xl text-slate-950 font-black text-xl tracking-wider shadow-lg shadow-emerald-500/20">
+              BM
+            </div>
+            <div>
+              <span className={`font-extrabold text-2xl tracking-tight block leading-none ${isDark ? "text-white" : "text-slate-900"}`}>
+                Bliss<span className="text-emerald-400">Media</span>
+              </span>
+              <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-500">
+                Digital Studio & E-Store
+              </span>
+            </div>
           </div>
-        )}
-      </section>
 
-      {/* Trending + Latest grid */}
-      {trending.length > 0 && (
-        <section className="container-editorial mt-24">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
-            {/* Trending sidebar */}
-            <div className="lg:col-span-1 order-2 lg:order-1">
-              <SectionHeading title="Trending" subtitle="Most read this week" />
-              <div className="space-y-7">
-                {trending.map((article, i) => (
-                  <div key={article.id} className="flex gap-4">
-                    <TrendingNumber number={i + 1} />
-                    <div className="flex-1 min-w-0">
-                      <Link
-                        href={`/article/${article.slug}`}
-                        className="group"
+          <nav className="hidden md:flex items-center gap-8 text-sm font-semibold">
+            <button 
+              onClick={() => setActiveTab("agency")}
+              className={`transition ${activeTab === "agency" ? "text-emerald-400 font-bold" : "hover:text-emerald-400"}`}
+            >
+              Agency Overview
+            </button>
+            <button 
+              onClick={() => setActiveTab("articles")}
+              className={`transition flex items-center gap-1.5 ${activeTab === "articles" ? "text-emerald-400 font-bold" : "hover:text-emerald-400"}`}
+            >
+              <FileText size={16} />
+              <span>Articles & Blog</span>
+            </button>
+            <button 
+              onClick={() => setActiveTab("ebooks")}
+              className={`transition flex items-center gap-1.5 ${activeTab === "ebooks" ? "text-emerald-400 font-bold" : "hover:text-emerald-400"}`}
+            >
+              <ShoppingBag size={16} />
+              <span>E-Books Store</span>
+            </button>
+          </nav>
+
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setTheme(isDark ? "light" : "dark")}
+              className={`p-2.5 rounded-xl border transition ${
+                isDark 
+                  ? "border-emerald-800/60 bg-emerald-950/60 text-amber-400 hover:bg-emerald-900/60" 
+                  : "border-slate-200 bg-slate-100 text-emerald-800 hover:bg-slate-200"
+              }`}
+              title="Toggle Theme"
+            >
+              {isDark ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+
+            <button 
+              onClick={() => setActiveTab("ebooks")}
+              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold px-5 py-2.5 rounded-xl text-sm transition shadow-lg shadow-emerald-500/20 flex items-center gap-2"
+            >
+              <BookOpen size={16} />
+              <span>Buy E-Books</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content Area */}
+      <main className="max-w-7xl mx-auto px-6 py-10 space-y-12">
+        
+        {/* E-BOOKS STORE TAB */}
+        {activeTab === "ebooks" && (
+          <section className="space-y-8">
+            <div className="text-center space-y-3">
+              <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest">Digital Bookstore</span>
+              <h1 className="text-3xl md:text-5xl font-black">E-Books & Premium Resources</h1>
+              <p className={`max-w-xl mx-auto text-xs md:text-sm ${isDark ? "text-slate-400" : "text-slate-600"}`}>
+                Download guides, technical handbooks, and strategy playbooks managed through your backend database.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {ebooks.length > 0 ? (
+                ebooks.map((ebook) => (
+                  <div 
+                    key={ebook.id}
+                    className={`rounded-3xl border overflow-hidden transition-all duration-300 flex flex-col justify-between ${
+                      isDark ? "bg-[#061c14] border-emerald-900/40 hover:border-emerald-500/60" : "bg-white border-slate-200 shadow-md"
+                    }`}
+                  >
+                    <div className="space-y-4">
+                      <div className="relative h-64 overflow-hidden bg-emerald-950/40">
+                        <img 
+                          src={ebook.cover_image_url || "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&auto=format&fit=crop&q=80"} 
+                          alt={ebook.title} 
+                          className="w-full h-full object-cover"
+                        />
+                        <span className="absolute top-4 right-4 bg-emerald-500 text-slate-950 font-black text-xs px-3 py-1 rounded-full shadow-lg">
+                          ${ebook.price}
+                        </span>
+                      </div>
+
+                      <div className="p-6 space-y-2">
+                        <div className="flex items-center gap-2 text-[10px] font-bold uppercase text-emerald-400">
+                          <span>{ebook.format || "PDF"}</span>
+                          <span>•</span>
+                          <span>{ebook.pages || 100} Pages</span>
+                        </div>
+                        <h3 className="text-xl font-bold leading-snug">{ebook.title}</h3>
+                        <p className={`text-xs leading-relaxed ${isDark ? "text-slate-400" : "text-slate-600"}`}>
+                          {ebook.description}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="p-6 pt-0">
+                      <a 
+                        href={ebook.download_url || "#"} 
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
                       >
-                        <h3 className="text-base font-serif font-semibold leading-snug group-hover:text-gold transition-colors duration-200 line-clamp-3">
-                          {article.title}
-                        </h3>
-                      </Link>
-                      <p className="mt-2 text-xs text-muted-foreground font-sans">
-                        {article.category?.name} ·{' '}
-                        {formatRelativeTime(article.published_at)}
-                      </p>
+                        <ShoppingBag size={15} />
+                        <span>Purchase E-Book</span>
+                      </a>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Latest articles */}
-            <div className="lg:col-span-2 order-1 lg:order-2">
-              <SectionHeading
-                title="Latest Stories"
-                subtitle="Fresh from the newsroom"
-                href="/search"
-                hrefLabel="View all"
-              />
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-12">
-                {latest.slice(0, 4).map((article) => (
-                  <ArticleCard
-                    key={article.id}
-                    article={article}
-                    variant="compact"
-                    showExcerpt
-                    showReadingTime
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Category sections */}
-      {categoryData.map(({ category, articles }, idx) => {
-        if (articles.length === 0) return null;
-        const lead = articles[0];
-        const rest = articles.slice(1, 4);
-
-        return (
-          <section
-            key={category.id}
-            className={`container-editorial mt-24 ${idx % 2 === 1 ? 'bg-card/40 -mx-4 px-4 py-16 rounded-xl' : ''}`}
-          >
-            <SectionHeading
-              title={category.name}
-              subtitle={category.description}
-              href={`/category/${category.slug}`}
-              hrefLabel={`More in ${category.name}`}
-            />
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-              {/* Lead story */}
-              <ArticleCard
-                article={lead}
-                variant="default"
-                showExcerpt
-                showReadingTime
-              />
-
-              {/* Secondary stories */}
-              <div className="space-y-7">
-                {rest.map((article) => (
-                  <ArticleCard
-                    key={article.id}
-                    article={article}
-                    variant="horizontal"
-                    showExcerpt={false}
-                  />
-                ))}
-              </div>
+                ))
+              ) : (
+                <div className={`col-span-3 p-12 text-center rounded-3xl border ${isDark ? "bg-[#061c14] border-emerald-900/40" : "bg-white border-slate-200"}`}>
+                  <BookOpen size={36} className="mx-auto text-emerald-400 mb-3" />
+                  <h3 className="text-lg font-bold">No E-Books active in database</h3>
+                  <p className="text-xs text-slate-400">Add entries to your `ebooks` Supabase table to display them here.</p>
+                </div>
+              )}
             </div>
           </section>
-        );
-      })}
+        )}
 
-      {/* Editor's Picks */}
-      {editorsPicks.length > 0 && (
-        <section className="container-editorial mt-24">
-          <SectionHeading
-            title="Editor's Picks"
-            subtitle="Hand-selected by our editorial team"
-          />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
-            {editorsPicks.map((article) => (
-              <ArticleCard
-                key={article.id}
-                article={article}
-                variant="compact"
-                showExcerpt
-                showAuthor
-                showReadingTime
-              />
-            ))}
-          </div>
-        </section>
-      )}
+        {/* ARTICLES & BLOG TAB */}
+        {activeTab === "articles" && (
+          <section className="space-y-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-emerald-900/30">
+              <div>
+                <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest">Articles & Media</span>
+                <h1 className="text-3xl font-black">Published Articles</h1>
+              </div>
 
-      {/* E-books section */}
-      {ebooks.length > 0 && (
-        <section className="container-editorial mt-24">
-          <SectionHeading
-            title="E-books"
-            subtitle="Premium downloads from our editorial team"
-            href="/ebooks"
-            hrefLabel="Browse all"
-          />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
-            {ebooks.map((ebook) => (
-              <EbookCard key={ebook.id} ebook={ebook} variant="featured" />
-            ))}
-          </div>
-        </section>
-      )}
+              <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-xs w-72 ${
+                isDark ? "bg-[#061c14] border-emerald-900/60" : "bg-slate-100 border-slate-200"
+              }`}>
+                <Search size={15} className="text-slate-400" />
+                <input 
+                  type="text" 
+                  placeholder="Search articles..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="bg-transparent border-none outline-none w-full text-xs"
+                />
+              </div>
+            </div>
 
-      {/* Newsletter section */}
-      <section
-        id="newsletter"
-        className="mt-28 bg-foreground text-background py-24 relative overflow-hidden"
-      >
-        {/* Decorative gradient accent */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gold/10 blur-[100px] rounded-full pointer-events-none" />
-        <div className="container-editorial text-center max-w-2xl mx-auto relative">
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <span className="h-px w-8 bg-gold" />
-            <span className="category-label text-gold">Newsletter</span>
-            <span className="h-px w-8 bg-gold" />
-          </div>
-          <h2 className="font-serif text-3xl md:text-4xl font-bold leading-tight">
-            The best of Bliss Media, in your inbox
-          </h2>
-          <p className="mt-5 text-background/65 font-sans text-lg leading-relaxed">
-            Join thousands of readers for a weekly curated digest of our
-            finest stories across technology, culture, business, and beyond.
-          </p>
-          <div className="mt-10 flex justify-center">
-            <NewsletterForm />
-          </div>
-          <p className="mt-5 text-xs text-background/40 font-sans">
-            No spam. Unsubscribe at any time.
-          </p>
-        </div>
-      </section>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {filteredArticles.length > 0 ? (
+                filteredArticles.map((art) => (
+                  <article 
+                    key={art.id}
+                    className={`rounded-2xl border overflow-hidden flex flex-col justify-between ${
+                      isDark ? "bg-[#061c14] border-emerald-900/40 hover:border-emerald-500/50" : "bg-white border-slate-200"
+                    }`}
+                  >
+                    <div className="space-y-3">
+                      <div className="h-48 overflow-hidden relative">
+                        <img src={art.cover_image_url || "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&auto=format&fit=crop&q=80"} alt={art.title} className="w-full h-full object-cover" />
+                        <span className="absolute top-3 left-3 bg-black/70 text-emerald-400 font-bold text-[10px] uppercase px-2.5 py-1 rounded-md backdrop-blur">
+                          {art.category || "General"}
+                        </span>
+                      </div>
+                      <div className="p-5 space-y-2">
+                        <span className="text-[10px] text-emerald-400 font-semibold">{art.read_time || "5 min read"}</span>
+                        <h3 className="font-bold text-base leading-snug">{art.title}</h3>
+                        <p className={`text-xs line-clamp-2 ${isDark ? "text-slate-400" : "text-slate-600"}`}>{art.excerpt}</p>
+                      </div>
+                    </div>
+                    <div className="p-5 pt-0">
+                      <a href={`/article/${art.slug || art.id}`} className="text-xs font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1">
+                        <span>Read Article</span> <ArrowUpRight size={14} />
+                      </a>
+                    </div>
+                  </article>
+                ))
+              ) : (
+                <div className="col-span-3 text-center py-12 text-slate-400 text-xs">
+                  No articles found in the database. Add entries to the `articles` table in Supabase.
+                </div>
+              )}
+            </div>
+          </section>
+        )}
 
-      <SiteFooter />
-    </>
+        {/* AGENCY OVERVIEW TAB */}
+        {activeTab === "agency" && (
+          <section className="text-center py-16 space-y-6">
+            <span className="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              ⚡ BlissMedia — Digital Agency & Store Platform
+            </span>
+            <h1 className="text-4xl md:text-6xl font-black tracking-tight">
+              Crafting High-Converting <br />
+              <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
+                Digital Experiences & E-Products
+              </span>
+            </h1>
+            <p className={`max-w-xl mx-auto text-sm ${isDark ? "text-slate-300" : "text-slate-600"}`}>
+              BlissMedia merges high-end digital design with your backend CMS for seamless article publishing and e-book sales.
+            </p>
+            <div className="flex justify-center gap-4 pt-4">
+              <button 
+                onClick={() => setActiveTab("ebooks")}
+                className="bg-emerald-500 text-slate-950 font-bold px-6 py-3 rounded-xl text-xs uppercase tracking-wider"
+              >
+                Browse E-Book Store
+              </button>
+              <button 
+                onClick={() => setActiveTab("articles")}
+                className={`px-6 py-3 rounded-xl text-xs font-bold border ${isDark ? "border-emerald-800 text-slate-200" : "border-slate-300 text-slate-800"}`}
+              >
+                Read Articles
+              </button>
+            </div>
+          </section>
+        )}
+
+      </main>
+
+      <footer className={`border-t py-8 text-center text-xs ${
+        isDark ? "border-emerald-900/40 bg-[#020906] text-slate-400" : "border-slate-200 bg-white text-slate-500"
+      }`}>
+        <p>© {new Date().getFullYear()} BlissMedia. Connected to Supabase backend.</p>
+      </footer>
+    </div>
   );
 }
