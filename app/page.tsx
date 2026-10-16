@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from "react";
-import { createClient } from "@/lib/supabase/client"; // Adjust path if using @/lib/supabase
+import { createClient } from "@supabase/supabase-js";
 import { 
   Sun, 
   Moon, 
@@ -11,9 +11,13 @@ import {
   FileText, 
   ArrowUpRight, 
   Sparkles,
-  Layers,
-  DollarSign
+  Layers
 } from "lucide-react";
+
+// Initialize Supabase safely using environment variables or fallback
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+const supabase = supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey) : null;
 
 interface Article {
   id: string;
@@ -52,24 +56,19 @@ export default function BlissMediaPage() {
   // Fetch data directly from Supabase tables
   useEffect(() => {
     async function loadSupabaseData() {
+      if (!supabase) {
+        setLoading(false);
+        return;
+      }
       setLoading(true);
       try {
-        const supabase = createClient();
+        const [articlesRes, ebooksRes] = await Promise.all([
+          supabase.from("articles").select("*").order("created_at", { ascending: false }),
+          supabase.from("ebooks").select("*").order("created_at", { ascending: false })
+        ]);
 
-        // Fetch published articles
-        const { data: articlesData } = await supabase
-          .from("articles")
-          .select("*")
-          .order("created_at", { ascending: false });
-
-        // Fetch e-books catalog
-        const { data: ebooksData } = await supabase
-          .from("ebooks")
-          .select("*")
-          .order("created_at", { ascending: false });
-
-        if (articlesData) setArticles(articlesData);
-        if (ebooksData) setEbooks(ebooksData);
+        if (articlesRes.data) setArticles(articlesRes.data);
+        if (ebooksRes.data) setEbooks(ebooksRes.data);
       } catch (error) {
         console.error("Error fetching Supabase data:", error);
       } finally {
@@ -137,200 +136,4 @@ export default function BlissMediaPage() {
 
           <div className="flex items-center gap-4">
             <button
-              onClick={() => setTheme(isDark ? "light" : "dark")}
-              className={`p-2.5 rounded-xl border transition ${
-                isDark 
-                  ? "border-emerald-800/60 bg-emerald-950/60 text-amber-400 hover:bg-emerald-900/60" 
-                  : "border-slate-200 bg-slate-100 text-emerald-800 hover:bg-slate-200"
-              }`}
-              title="Toggle Theme"
-            >
-              {isDark ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-
-            <button 
-              onClick={() => setActiveTab("ebooks")}
-              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold px-5 py-2.5 rounded-xl text-sm transition shadow-lg shadow-emerald-500/20 flex items-center gap-2"
-            >
-              <BookOpen size={16} />
-              <span>Buy E-Books</span>
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content Area */}
-      <main className="max-w-7xl mx-auto px-6 py-10 space-y-12">
-        
-        {/* E-BOOKS STORE TAB */}
-        {activeTab === "ebooks" && (
-          <section className="space-y-8">
-            <div className="text-center space-y-3">
-              <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest">Digital Bookstore</span>
-              <h1 className="text-3xl md:text-5xl font-black">E-Books & Premium Resources</h1>
-              <p className={`max-w-xl mx-auto text-xs md:text-sm ${isDark ? "text-slate-400" : "text-slate-600"}`}>
-                Download guides, technical handbooks, and strategy playbooks managed through your backend database.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {ebooks.length > 0 ? (
-                ebooks.map((ebook) => (
-                  <div 
-                    key={ebook.id}
-                    className={`rounded-3xl border overflow-hidden transition-all duration-300 flex flex-col justify-between ${
-                      isDark ? "bg-[#061c14] border-emerald-900/40 hover:border-emerald-500/60" : "bg-white border-slate-200 shadow-md"
-                    }`}
-                  >
-                    <div className="space-y-4">
-                      <div className="relative h-64 overflow-hidden bg-emerald-950/40">
-                        <img 
-                          src={ebook.cover_image_url || "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&auto=format&fit=crop&q=80"} 
-                          alt={ebook.title} 
-                          className="w-full h-full object-cover"
-                        />
-                        <span className="absolute top-4 right-4 bg-emerald-500 text-slate-950 font-black text-xs px-3 py-1 rounded-full shadow-lg">
-                          ${ebook.price}
-                        </span>
-                      </div>
-
-                      <div className="p-6 space-y-2">
-                        <div className="flex items-center gap-2 text-[10px] font-bold uppercase text-emerald-400">
-                          <span>{ebook.format || "PDF"}</span>
-                          <span>•</span>
-                          <span>{ebook.pages || 100} Pages</span>
-                        </div>
-                        <h3 className="text-xl font-bold leading-snug">{ebook.title}</h3>
-                        <p className={`text-xs leading-relaxed ${isDark ? "text-slate-400" : "text-slate-600"}`}>
-                          {ebook.description}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="p-6 pt-0">
-                      <a 
-                        href={ebook.download_url || "#"} 
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
-                      >
-                        <ShoppingBag size={15} />
-                        <span>Purchase E-Book</span>
-                      </a>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className={`col-span-3 p-12 text-center rounded-3xl border ${isDark ? "bg-[#061c14] border-emerald-900/40" : "bg-white border-slate-200"}`}>
-                  <BookOpen size={36} className="mx-auto text-emerald-400 mb-3" />
-                  <h3 className="text-lg font-bold">No E-Books active in database</h3>
-                  <p className="text-xs text-slate-400">Add entries to your `ebooks` Supabase table to display them here.</p>
-                </div>
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* ARTICLES & BLOG TAB */}
-        {activeTab === "articles" && (
-          <section className="space-y-8">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-emerald-900/30">
-              <div>
-                <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest">Articles & Media</span>
-                <h1 className="text-3xl font-black">Published Articles</h1>
-              </div>
-
-              <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-xs w-72 ${
-                isDark ? "bg-[#061c14] border-emerald-900/60" : "bg-slate-100 border-slate-200"
-              }`}>
-                <Search size={15} className="text-slate-400" />
-                <input 
-                  type="text" 
-                  placeholder="Search articles..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-transparent border-none outline-none w-full text-xs"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {filteredArticles.length > 0 ? (
-                filteredArticles.map((art) => (
-                  <article 
-                    key={art.id}
-                    className={`rounded-2xl border overflow-hidden flex flex-col justify-between ${
-                      isDark ? "bg-[#061c14] border-emerald-900/40 hover:border-emerald-500/50" : "bg-white border-slate-200"
-                    }`}
-                  >
-                    <div className="space-y-3">
-                      <div className="h-48 overflow-hidden relative">
-                        <img src={art.cover_image_url || "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&auto=format&fit=crop&q=80"} alt={art.title} className="w-full h-full object-cover" />
-                        <span className="absolute top-3 left-3 bg-black/70 text-emerald-400 font-bold text-[10px] uppercase px-2.5 py-1 rounded-md backdrop-blur">
-                          {art.category || "General"}
-                        </span>
-                      </div>
-                      <div className="p-5 space-y-2">
-                        <span className="text-[10px] text-emerald-400 font-semibold">{art.read_time || "5 min read"}</span>
-                        <h3 className="font-bold text-base leading-snug">{art.title}</h3>
-                        <p className={`text-xs line-clamp-2 ${isDark ? "text-slate-400" : "text-slate-600"}`}>{art.excerpt}</p>
-                      </div>
-                    </div>
-                    <div className="p-5 pt-0">
-                      <a href={`/article/${art.slug || art.id}`} className="text-xs font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1">
-                        <span>Read Article</span> <ArrowUpRight size={14} />
-                      </a>
-                    </div>
-                  </article>
-                ))
-              ) : (
-                <div className="col-span-3 text-center py-12 text-slate-400 text-xs">
-                  No articles found in the database. Add entries to the `articles` table in Supabase.
-                </div>
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* AGENCY OVERVIEW TAB */}
-        {activeTab === "agency" && (
-          <section className="text-center py-16 space-y-6">
-            <span className="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              ⚡ BlissMedia — Digital Agency & Store Platform
-            </span>
-            <h1 className="text-4xl md:text-6xl font-black tracking-tight">
-              Crafting High-Converting <br />
-              <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
-                Digital Experiences & E-Products
-              </span>
-            </h1>
-            <p className={`max-w-xl mx-auto text-sm ${isDark ? "text-slate-300" : "text-slate-600"}`}>
-              BlissMedia merges high-end digital design with your backend CMS for seamless article publishing and e-book sales.
-            </p>
-            <div className="flex justify-center gap-4 pt-4">
-              <button 
-                onClick={() => setActiveTab("ebooks")}
-                className="bg-emerald-500 text-slate-950 font-bold px-6 py-3 rounded-xl text-xs uppercase tracking-wider"
-              >
-                Browse E-Book Store
-              </button>
-              <button 
-                onClick={() => setActiveTab("articles")}
-                className={`px-6 py-3 rounded-xl text-xs font-bold border ${isDark ? "border-emerald-800 text-slate-200" : "border-slate-300 text-slate-800"}`}
-              >
-                Read Articles
-              </button>
-            </div>
-          </section>
-        )}
-
-      </main>
-
-      <footer className={`border-t py-8 text-center text-xs ${
-        isDark ? "border-emerald-900/40 bg-[#020906] text-slate-400" : "border-slate-200 bg-white text-slate-500"
-      }`}>
-        <p>© {new Date().getFullYear()} BlissMedia. Connected to Supabase backend.</p>
-      </footer>
-    </div>
-  );
-}
+              onClick={() => setTheme(isDark ? "light" :
