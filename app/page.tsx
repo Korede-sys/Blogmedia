@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from "react";
-import { createClient } from "@/lib/supabase/client"; // Adjust path if using @/lib/supabase
+import { createClient } from "@supabase/supabase-js";
 import { 
   Sun, 
   Moon, 
@@ -11,9 +11,13 @@ import {
   FileText, 
   ArrowUpRight, 
   Sparkles,
-  Layers,
-  DollarSign
+  Layers
 } from "lucide-react";
+
+// Safe Supabase client initialization
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+const supabase = supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey) : null;
 
 interface Article {
   id: string;
@@ -52,24 +56,19 @@ export default function BlissMediaPage() {
   // Fetch data directly from Supabase tables
   useEffect(() => {
     async function loadSupabaseData() {
+      if (!supabase) {
+        setLoading(false);
+        return;
+      }
       setLoading(true);
       try {
-        const supabase = createClient();
+        const [articlesRes, ebooksRes] = await Promise.all([
+          supabase.from("articles").select("*").order("created_at", { ascending: false }),
+          supabase.from("ebooks").select("*").order("created_at", { ascending: false })
+        ]);
 
-        // Fetch published articles
-        const { data: articlesData } = await supabase
-          .from("articles")
-          .select("*")
-          .order("created_at", { ascending: false });
-
-        // Fetch e-books catalog
-        const { data: ebooksData } = await supabase
-          .from("ebooks")
-          .select("*")
-          .order("created_at", { ascending: false });
-
-        if (articlesData) setArticles(articlesData);
-        if (ebooksData) setEbooks(ebooksData);
+        if (articlesRes.data) setArticles(articlesRes.data);
+        if (ebooksRes.data) setEbooks(ebooksRes.data);
       } catch (error) {
         console.error("Error fetching Supabase data:", error);
       } finally {
