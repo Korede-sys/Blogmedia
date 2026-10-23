@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { Search, Menu, X } from 'lucide-react';
+import { Search, Menu, X, LogIn } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/public/theme-toggle';
 
@@ -65,9 +65,18 @@ export function SiteHeader() {
                 day: 'numeric',
               })}
             </p>
-            <p className="text-[0.6875rem] text-muted-foreground font-sans tracking-wide">
-              Stories. Perspectives. Culture.
-            </p>
+            <div className="flex items-center gap-4">
+              <p className="text-[0.6875rem] text-muted-foreground font-sans tracking-wide">
+                Stories. Perspectives. Culture.
+              </p>
+              <Link
+                href="/auth/sign-in"
+                className="flex items-center gap-1.5 text-[0.6875rem] font-sans font-medium text-foreground/70 hover:text-gold transition-colors"
+              >
+                <LogIn className="w-3 h-3" />
+                Admin Login
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -219,7 +228,17 @@ export function SiteHeader() {
                     </Link>
                   </li>
                 ))}
-
+                <li className="border-t border-border my-3" />
+                <li>
+                  <Link
+                    href="/auth/sign-in"
+                    className="flex items-center gap-2 py-3 px-3 text-foreground hover:bg-secondary rounded-md font-sans font-medium transition-colors"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <LogIn className="w-4 h-4" />
+                    Admin Login
+                  </Link>
+                </li>
               </ul>
             </nav>
           </div>
