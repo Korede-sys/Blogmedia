@@ -93,13 +93,17 @@ export function SiteHeader() {
             </button>
 
             {/* Logo */}
-            <Link href="/" className="flex-1 text-center md:flex-none md:mr-auto">
-              <span className="font-serif text-2xl md:text-3xl font-bold tracking-tight text-foreground">
-                BLISS<span className="text-gold">.</span>
-              </span>
-              <span className="block text-[0.625rem] md:text-[0.6875rem] tracking-[0.32em] uppercase text-muted-foreground font-sans mt-0.5">
-                Media
-              </span>
+            <Link href="/" className="flex-1 flex justify-center md:flex-none md:justify-start md:mr-auto">
+              <img
+                src="/logo-dark.png"
+                alt="Bliss Media"
+                className="h-8 md:h-9 w-auto dark:hidden"
+              />
+              <img
+                src="/logo-white.png"
+                alt="Bliss Media"
+                className="h-8 md:h-9 w-auto hidden dark:block"
+              />
             </Link>
 
             {/* Desktop actions */}
@@ -193,9 +197,8 @@ export function SiteHeader() {
           />
           <div className="absolute left-0 top-0 bottom-0 w-72 bg-background shadow-xl overflow-y-auto" style={{ animation: 'slideInRight 0.3s ease-out' }}>
             <div className="flex items-center justify-between p-5 border-b border-border">
-              <span className="font-serif text-xl font-bold">
-                BLISS<span className="text-gold">.</span>
-              </span>
+              <img src="/logo-dark.png" alt="Bliss Media" className="h-7 w-auto dark:hidden" />
+              <img src="/logo-white.png" alt="Bliss Media" className="h-7 w-auto hidden dark:block" />
               <button
                 onClick={() => setMobileOpen(false)}
                 className="p-2 text-foreground hover:bg-secondary rounded-md transition-colors"
