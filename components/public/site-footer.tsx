@@ -24,12 +24,16 @@ export function SiteFooter() {
           {/* Brand */}
           <div className="lg:col-span-1">
             <Link href="/" className="inline-block">
-              <span className="font-serif text-2xl font-bold tracking-tight">
-                BLISS<span className="text-gold">.</span>
-              </span>
-              <span className="block text-[0.6875rem] tracking-[0.32em] uppercase text-background/50 font-sans mt-1">
-                Media
-              </span>
+              <img
+                src="/logo-white.png"
+                alt="Bliss Media"
+                className="h-8 w-auto dark:hidden"
+              />
+              <img
+                src="/logo-dark.png"
+                alt="Bliss Media"
+                className="h-8 w-auto hidden dark:block"
+              />
             </Link>
             <p className="mt-5 text-sm text-background/65 font-sans leading-relaxed max-w-xs">
               Stories. Perspectives. Culture. A premium digital magazine for the
