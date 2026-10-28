@@ -98,15 +98,6 @@ export default function SignInPage() {
                 Create one
               </Link>
             </p>
-            <p className="text-sm text-muted-foreground font-sans">
-              Need to set up the first admin?{' '}
-              <Link
-                href="/auth/setup"
-                className="text-gold hover:text-gold/80 transition-colors font-medium"
-              >
-                Admin Setup
-              </Link>
-            </p>
           </div>
         </div>
       </section>
