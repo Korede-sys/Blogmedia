@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabase-client';
 import { useAuth } from '@/lib/auth-context';
 import { ImageUpload } from '@/components/admin/image-upload';
+import { PdfUpload } from '@/components/admin/pdf-upload';
 import { toast } from 'sonner';
 import {
   Save,
@@ -341,13 +342,7 @@ export default function EbookEditorPage({
             <label className="block text-xs font-sans uppercase tracking-wider text-muted-foreground mb-2">
               Download File URL
             </label>
-            <input
-              type="text"
-              value={fileUrl}
-              onChange={(e) => setFileUrl(e.target.value)}
-              placeholder="https://… (link to PDF/EPUB file)"
-              className={inputClass}
-            />
+            <PdfUpload value={fileUrl} onChange={setFileUrl} />
           </div>
         </div>
 
