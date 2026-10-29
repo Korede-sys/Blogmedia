@@ -173,3 +173,14 @@ export interface EbookPurchase {
   downloaded_at: string | null;
   created_at: string;
 }
+export type AdPlacement = 'header' | 'in_article' | 'sidebar' | 'footer';
+
+export interface AdSlot {
+  id: string;
+  placement: AdPlacement;
+  image_url: string;
+  link_url: string;
+  alt_text: string;
+  is_active: boolean;
+  created_at: string;
+}
