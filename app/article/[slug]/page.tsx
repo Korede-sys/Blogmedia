@@ -18,6 +18,7 @@ import { SocialShare } from '@/components/public/social-share';
 import { CommentSection } from '@/components/public/comment-section';
 import { formatDate } from '@/lib/utils';
 import { Clock, Calendar, ArrowLeft, User } from 'lucide-react';
+import { AdBanner } from '@/components/public/ad-banner';
 
 export const dynamic = 'force-dynamic';
 
@@ -162,6 +163,7 @@ export default async function ArticlePage({ params }: PageProps) {
         {/* Article body */}
         <div className="container-article mt-12">
           <ArticleRenderer blocks={article.body} />
+          <AdBanner placement="in_article" />
 
           {/* Social share */}
           <div className="mt-12 pt-8 border-t border-border">
