@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { Search, Menu, X, LogIn } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/lib/supabase-client';
 import { ThemeToggle } from '@/components/public/theme-toggle';
 
 interface NavLink {
@@ -11,7 +12,7 @@ interface NavLink {
   href: string;
 }
 
-const CATEGORIES: NavLink[] = [
+const FALLBACK_CATEGORIES: NavLink[] = [
   { label: 'Technology', href: '/category/technology' },
   { label: 'Entertainment', href: '/category/entertainment' },
   { label: 'Lifestyle', href: '/category/lifestyle' },
@@ -35,6 +36,25 @@ export function SiteHeader() {
     const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const [CATEGORIES, setCATEGORIES] = useState<NavLink[]>(FALLBACK_CATEGORIES);
+
+  useEffect(() => {
+    supabase
+      .from('categories')
+      .select('name, slug')
+      .order('sort_order', { ascending: true })
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          setCATEGORIES(
+            data.map((c: { name: string; slug: string }) => ({
+              label: c.name,
+              href: `/category/${c.slug}`,
+            }))
+          );
+        }
+      });
   }, []);
 
   const handleSearch = (e: React.FormEvent) => {
