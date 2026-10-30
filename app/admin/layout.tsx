@@ -17,6 +17,8 @@ import {
   Database,
   BookOpen,
   Megaphone,
+  FolderTree,
+  Tag,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/public/theme-toggle';
@@ -24,6 +26,8 @@ import { ThemeToggle } from '@/components/public/theme-toggle';
 const NAV_ITEMS = [
   { label: 'Overview', href: '/admin', icon: LayoutDashboard },
   { label: 'Articles', href: '/admin/articles', icon: FileText },
+  { label: 'Categories', href: '/admin/categories', icon: FolderTree },
+  { label: 'Tags', href: '/admin/tags', icon: Tag },
   { label: 'Ebooks', href: '/admin/ebooks', icon: BookOpen },
   { label: 'Media', href: '/admin/media', icon: ImageIcon },
   { label: 'Ads', href: '/admin/ads', icon: Megaphone, adminOnly: true },
