@@ -65,7 +65,7 @@ export default function AdminTagsPage() {
 
     const newGroups: CategoryGroup[] = categories.map((category) => {
       const items: TagUsage[] = [];
-      for (const [tagId, perCat] of counts.entries()) {
+      for (const [tagId, perCat] of Array.from(counts.entries())) {
         const count = perCat.get(category.id);
         if (count && tagsById.has(tagId)) {
           items.push({ tag: tagsById.get(tagId)!, count });
@@ -76,7 +76,7 @@ export default function AdminTagsPage() {
     });
 
     const uncategorizedItems: TagUsage[] = [];
-    for (const [tagId, perCat] of counts.entries()) {
+    for (const [tagId, perCat] of Array.from(counts.entries())) {
       const count = perCat.get('none');
       if (count && tagsById.has(tagId)) {
         uncategorizedItems.push({ tag: tagsById.get(tagId)!, count });
@@ -84,7 +84,7 @@ export default function AdminTagsPage() {
     }
     uncategorizedItems.sort((a, b) => a.tag.name.localeCompare(b.tag.name));
 
-    const usedTagIds = new Set(counts.keys());
+    const usedTagIds = new Set(Array.from(counts.keys()));
     const unusedTags = allTags.filter((t) => !usedTagIds.has(t.id));
 
     setTags(allTags);
