@@ -99,12 +99,21 @@ export default function AdminCategoriesPage() {
 
   const handleDelete = async (id: string) => {
     if (!hasRole('admin')) return;
-    if (
-      !confirm(
-        'Delete this category? Articles in it will keep their category reference but the public page will 404. This cannot be undone.'
-      )
-    )
+    const { count, error: countError } = await supabase
+      .from('articles')
+      .select('id', { count: 'exact', head: true })
+      .eq('category_id', id);
+    if (countError) {
+      toast.error('Could not check for articles using this category: ' + countError.message);
       return;
+    }
+    if (count && count > 0) {
+      toast.error(
+        `Can't delete: ${count} article${count === 1 ? '' : 's'} ${count === 1 ? 'is' : 'are'} still in this category. Reassign ${count === 1 ? 'it' : 'them'} to another category first.`
+      );
+      return;
+    }
+    if (!confirm('Delete this category? This cannot be undone.')) return;
     const { error } = await supabase.from('categories').delete().eq('id', id);
     if (error) {
       toast.error('Delete failed: ' + error.message);
