@@ -16,6 +16,7 @@ import {
   ExternalLink,
   Database,
   BookOpen,
+  Megaphone,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/public/theme-toggle';
@@ -25,6 +26,7 @@ const NAV_ITEMS = [
   { label: 'Articles', href: '/admin/articles', icon: FileText },
   { label: 'Ebooks', href: '/admin/ebooks', icon: BookOpen },
   { label: 'Media', href: '/admin/media', icon: ImageIcon },
+  { label: 'Ads', href: '/admin/ads', icon: Megaphone, adminOnly: true },
   { label: 'Users', href: '/admin/users', icon: Users, adminOnly: true },
   { label: 'Settings', href: '/admin/settings', icon: Settings, adminOnly: true },
   { label: 'Seed Content', href: '/admin/seed', icon: Database, adminOnly: true },
