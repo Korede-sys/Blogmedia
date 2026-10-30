@@ -14,6 +14,7 @@ import { ArticleCard } from '@/components/public/article-card';
 import { SectionHeading } from '@/components/public/section-heading';
 import { EbookPurchaseButton } from '@/components/public/ebook-purchase-button';
 import { NewsletterForm } from '@/components/public/newsletter-form';
+import { AdBanner } from '@/components/public/ad-banner';
 
 export const dynamic = 'force-dynamic';
 
@@ -48,6 +49,7 @@ export default async function HomePage() {
   return (
     <>
       <SiteHeader />
+      <AdBanner placement="header" />
 
       {heroArticle ? (
         <section className="container-editorial pt-10 pb-14 md:pt-14 md:pb-16 border-b border-border/60">
