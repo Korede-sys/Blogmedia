@@ -15,6 +15,8 @@ import {
   ChevronDown,
   ChevronRight,
   FileText,
+  Tag as TagIcon,
+  Check,
 } from 'lucide-react';
 import type { Category } from '@/lib/types';
 import { slugify, formatDateShort, cn } from '@/lib/utils';
@@ -31,6 +33,13 @@ interface CategoryArticle {
   title: string;
   status: string;
   updated_at: string;
+}
+
+interface CategoryTag {
+  id: string;
+  name: string;
+  slug: string;
+  count: number;
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -56,6 +65,11 @@ export default function AdminCategoriesPage() {
   const [articlesByCategory, setArticlesByCategory] = useState<
     Record<string, CategoryArticle[] | 'loading'>
   >({});
+  const [tagsByCategory, setTagsByCategory] = useState<
+    Record<string, CategoryTag[] | 'loading'>
+  >({});
+  const [editingTagId, setEditingTagId] = useState<string | null>(null);
+  const [editingTagName, setEditingTagName] = useState('');
 
   const loadCategories = useCallback(async () => {
     setLoading(true);
@@ -129,7 +143,6 @@ export default function AdminCategoriesPage() {
     }
     setSaving(false);
   };
-
   const handleDelete = async (id: string) => {
     if (!hasRole('admin')) return;
     const { count, error: countError } = await supabase
@@ -174,6 +187,35 @@ export default function AdminCategoriesPage() {
     }));
   };
 
+  const loadTagsForCategory = async (categoryId: string) => {
+    setTagsByCategory((prev) => ({ ...prev, [categoryId]: 'loading' }));
+    const { data, error } = await supabase
+      .from('article_tags')
+      .select('tag_id, tags(id, name, slug), articles!inner(category_id)')
+      .eq('articles.category_id', categoryId);
+    if (error) {
+      toast.error('Failed to load tags for this category');
+      setTagsByCategory((prev) => ({ ...prev, [categoryId]: [] }));
+      return;
+    }
+    const counts = new Map<string, CategoryTag>();
+    for (const row of (data || []) as unknown as {
+      tag_id: string;
+      tags: { id: string; name: string; slug: string } | { id: string; name: string; slug: string }[] | null;
+    }[]) {
+      const tag = Array.isArray(row.tags) ? row.tags[0] : row.tags;
+      if (!tag) continue;
+      const existing = counts.get(tag.id);
+      if (existing) {
+        existing.count += 1;
+      } else {
+        counts.set(tag.id, { id: tag.id, name: tag.name, slug: tag.slug, count: 1 });
+      }
+    }
+    const list = Array.from(counts.values()).sort((a, b) => a.name.localeCompare(b.name));
+    setTagsByCategory((prev) => ({ ...prev, [categoryId]: list }));
+  };
+
   const toggleExpand = (categoryId: string) => {
     if (expandedId === categoryId) {
       setExpandedId(null);
@@ -182,6 +224,9 @@ export default function AdminCategoriesPage() {
     setExpandedId(categoryId);
     if (!articlesByCategory[categoryId]) {
       loadArticlesForCategory(categoryId);
+    }
+    if (!tagsByCategory[categoryId]) {
+      loadTagsForCategory(categoryId);
     }
   };
 
@@ -200,13 +245,52 @@ export default function AdminCategoriesPage() {
     }
   };
 
+  const startEditTag = (tag: CategoryTag) => {
+    setEditingTagId(tag.id);
+    setEditingTagName(tag.name);
+  };
+
+  const handleRenameTag = async (categoryId: string, tagId: string) => {
+    if (!editingTagName.trim()) return;
+    const { error } = await supabase
+      .from('tags')
+      .update({ name: editingTagName.trim(), slug: slugify(editingTagName.trim()) })
+      .eq('id', tagId);
+    if (error) {
+      toast.error('Failed to rename tag: ' + error.message);
+    } else {
+      toast.success('Tag renamed');
+      setEditingTagId(null);
+      loadTagsForCategory(categoryId);
+    }
+  };
+
+  const handleDeleteTag = async (categoryId: string, tagId: string, name: string, count: number) => {
+    if (!hasRole('admin')) {
+      toast.error('Only administrators can delete tags');
+      return;
+    }
+    const warning =
+      count > 0
+        ? `Delete "${name}"? It's used on ${count} article${count === 1 ? '' : 's'} in this section — they'll no longer show it. This cannot be undone.`
+        : `Delete "${name}"? This cannot be undone.`;
+    if (!confirm(warning)) return;
+    const { error } = await supabase.from('tags').delete().eq('id', tagId);
+    if (error) {
+      toast.error('Failed to delete tag: ' + error.message);
+    } else {
+      toast.success('Tag deleted');
+      loadTagsForCategory(categoryId);
+    }
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
         <div>
           <h1 className="font-serif text-3xl font-bold">Categories</h1>
           <p className="text-muted-foreground font-sans text-sm mt-1">
-            {categories.length} total categories — click a section to see and manage its articles
+            {categories.length} total categories — click a section to see and manage its articles and tags
           </p>
         </div>
         <button
@@ -317,6 +401,7 @@ export default function AdminCategoriesPage() {
               {categories.map((cat) => {
                 const isExpanded = expandedId === cat.id;
                 const articles = articlesByCategory[cat.id];
+                const tags = tagsByCategory[cat.id];
                 return (
                   <Fragment key={cat.id}>
                     <tr className="hover:bg-muted/20">
@@ -371,67 +456,152 @@ export default function AdminCategoriesPage() {
                     </tr>
                     {isExpanded && (
                       <tr key={`${cat.id}-articles`}>
-                        <td colSpan={5} className="bg-muted/10 px-4 py-4">
-                          {articles === 'loading' || !articles ? (
-                            <div className="flex items-center gap-2 text-sm font-sans text-muted-foreground py-4">
-                              <Loader2 className="w-4 h-4 animate-spin" />
-                              Loading articles…
-                            </div>
-                          ) : articles.length === 0 ? (
-                            <p className="text-sm font-sans text-muted-foreground italic py-2">
-                              No articles in this section yet.
-                            </p>
-                          ) : (
-                            <div className="space-y-1">
-                              {articles.map((article) => (
-                                <div
-                                  key={article.id}
-                                  className="flex items-center justify-between gap-3 bg-card border border-border rounded-sm px-3 py-2"
-                                >
-                                  <div className="flex items-center gap-2 min-w-0">
-                                    <FileText className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                                    <Link
-                                      href={`/admin/articles/${article.id}`}
-                                      className="text-sm font-sans font-medium truncate hover:text-gold transition-colors"
-                                    >
-                                      {article.title}
-                                    </Link>
-                                    <span
-                                      className={cn(
-                                        'px-2 py-0.5 text-xs font-sans rounded-sm flex-shrink-0',
-                                        STATUS_COLORS[article.status] || 'bg-gray-100 text-gray-700'
-                                      )}
-                                    >
-                                      {article.status}
-                                    </span>
-                                    <span className="text-xs font-sans text-muted-foreground hidden sm:inline flex-shrink-0">
-                                      Updated {formatDateShort(article.updated_at)}
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center gap-1 flex-shrink-0">
-                                    <Link
-                                      href={`/admin/articles/${article.id}`}
-                                      className="p-1.5 text-muted-foreground hover:text-gold transition-colors"
-                                      title="Edit"
-                                    >
-                                      <Pencil className="w-3.5 h-3.5" />
-                                    </Link>
-                                    {hasRole('admin') && (
-                                      <button
-                                        onClick={() =>
-                                          handleDeleteArticle(cat.id, article.id, article.title)
-                                        }
-                                        className="p-1.5 text-muted-foreground hover:text-destructive transition-colors"
-                                        title="Delete"
+                        <td colSpan={5} className="bg-muted/10 px-4 py-4 space-y-6">
+                          <div>
+                            <h3 className="text-xs font-sans uppercase tracking-wider text-muted-foreground mb-2">
+                              Articles
+                            </h3>
+                            {articles === 'loading' || !articles ? (
+                              <div className="flex items-center gap-2 text-sm font-sans text-muted-foreground py-4">
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                                Loading articles…
+                              </div>
+                            ) : articles.length === 0 ? (
+                              <p className="text-sm font-sans text-muted-foreground italic py-2">
+                                No articles in this section yet.
+                              </p>
+                            ) : (
+                              <div className="space-y-1">
+                                {articles.map((article) => (
+                                  <div
+                                    key={article.id}
+                                    className="flex items-center justify-between gap-3 bg-card border border-border rounded-sm px-3 py-2"
+                                  >
+                                    <div className="flex items-center gap-2 min-w-0">
+                                      <FileText className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                                      <Link
+                                        href={`/admin/articles/${article.id}`}
+                                        className="text-sm font-sans font-medium truncate hover:text-gold transition-colors"
                                       >
-                                        <Trash2 className="w-3.5 h-3.5" />
-                                      </button>
+                                        {article.title}
+                                      </Link>
+                                      <span
+                                        className={cn(
+                                          'px-2 py-0.5 text-xs font-sans rounded-sm flex-shrink-0',
+                                          STATUS_COLORS[article.status] || 'bg-gray-100 text-gray-700'
+                                        )}
+                                      >
+                                        {article.status}
+                                      </span>
+                                      <span className="text-xs font-sans text-muted-foreground hidden sm:inline flex-shrink-0">
+                                        Updated {formatDateShort(article.updated_at)}
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center gap-1 flex-shrink-0">
+                                      <Link
+                                        href={`/admin/articles/${article.id}`}
+                                        className="p-1.5 text-muted-foreground hover:text-gold transition-colors"
+                                        title="Edit"
+                                      >
+                                        <Pencil className="w-3.5 h-3.5" />
+                                      </Link>
+                                      {hasRole('admin') && (
+                                        <button
+                                          onClick={() =>
+                                            handleDeleteArticle(cat.id, article.id, article.title)
+                                          }
+                                          className="p-1.5 text-muted-foreground hover:text-destructive transition-colors"
+                                          title="Delete"
+                                        >
+                                          <Trash2 className="w-3.5 h-3.5" />
+                                        </button>
+                                      )}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+
+                          <div>
+                            <h3 className="text-xs font-sans uppercase tracking-wider text-muted-foreground mb-2">
+                              Tags used in this section
+                            </h3>
+                            {tags === 'loading' || !tags ? (
+                              <div className="flex items-center gap-2 text-sm font-sans text-muted-foreground py-4">
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                                Loading tags…
+                              </div>
+                            ) : tags.length === 0 ? (
+                              <p className="text-sm font-sans text-muted-foreground italic py-2">
+                                No tags used here yet.
+                              </p>
+                            ) : (
+                              <div className="flex flex-wrap gap-2">
+                                {tags.map((tag) => (
+                                  <div
+                                    key={tag.id}
+                                    className="flex items-center gap-2 bg-card border border-border rounded-sm px-3 py-2"
+                                  >
+                                    {editingTagId === tag.id ? (
+                                      <>
+                                        <input
+                                          type="text"
+                                          value={editingTagName}
+                                          onChange={(e) => setEditingTagName(e.target.value)}
+                                          onKeyDown={(e) =>
+                                            e.key === 'Enter' && handleRenameTag(cat.id, tag.id)
+                                          }
+                                          autoFocus
+                                          className="w-32 px-2 py-1 bg-background border border-border rounded-sm text-sm font-sans focus:outline-none focus:ring-1 focus:ring-gold"
+                                        />
+                                        <button
+                                          onClick={() => handleRenameTag(cat.id, tag.id)}
+                                          className="text-emerald-600 hover:text-emerald-700"
+                                          title="Save"
+                                        >
+                                          <Check className="w-4 h-4" />
+                                        </button>
+                                        <button
+                                          onClick={() => setEditingTagId(null)}
+                                          className="text-muted-foreground hover:text-foreground"
+                                          title="Cancel"
+                                        >
+                                          <X className="w-4 h-4" />
+                                        </button>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <TagIcon className="w-3.5 h-3.5 text-muted-foreground" />
+                                        <span className="text-sm font-sans">{tag.name}</span>
+                                        <span className="text-xs font-sans text-muted-foreground bg-muted/50 rounded-full px-1.5 py-0.5">
+                                          {tag.count}
+                                        </span>
+                                        <button
+                                          onClick={() => startEditTag(tag)}
+                                          className="text-muted-foreground hover:text-gold transition-colors"
+                                          title="Rename"
+                                        >
+                                          <Pencil className="w-3.5 h-3.5" />
+                                        </button>
+                                        {hasRole('admin') && (
+                                          <button
+                                            onClick={() =>
+                                              handleDeleteTag(cat.id, tag.id, tag.name, tag.count)
+                                            }
+                                            className="text-muted-foreground hover:text-destructive transition-colors"
+                                            title="Delete"
+                                          >
+                                            <Trash2 className="w-3.5 h-3.5" />
+                                          </button>
+                                        )}
+                                      </>
                                     )}
                                   </div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
+                                ))}
+                              </div>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     )}
